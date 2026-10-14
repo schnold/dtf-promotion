@@ -1,0 +1,30 @@
+---
+import '@fontsource-variable/archivo';
+import '@fontsource-variable/syne';
+import '../styles/global.css';
+import ScrollRail from '../components/ScrollRail.astro';
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#090a0c" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>Seite nicht gefunden · DTF Transferprint</title>
+  </head>
+  <body class="min-h-screen bg-ink text-paper">
+    <ScrollRail />
+    <main class="container-shell flex min-h-screen flex-col justify-center py-16">
+      <p class="text-sm font-bold text-cyan">FEHLDRUCK / 404</p>
+      <h1 class="font-display mt-5 text-[clamp(4rem,18vw,12rem)] font-extrabold leading-[.82] tracking-[-.075em]">DIESE SEITE<br/>IST AB.</h1>
+      <p class="mt-8 max-w-lg text-lg leading-relaxed text-white/65">Der Link führt ins Leere. Zurück zur DTF-Übersicht oder direkt zum passenden Transfer bei Selini-Shirt.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/" class="btn h-14 min-h-14 rounded-none border-0 bg-yellow px-7 font-bold text-ink hover:bg-white">Zur Startseite</a>
+        <a href="https://selini-shirt.de/product/dtf-transfer-bestellen" class="btn h-14 min-h-14 rounded-none border border-white/40 bg-transparent px-7 font-bold text-white hover:bg-pink">DTF bestellen</a>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,213 @@
+---
+import '@fontsource-variable/archivo';
+import '@fontsource-variable/syne';
+import '../styles/global.css';
+import { ArrowLeft, CircleCheck, Plus, Save, ShieldCheck, Trash, TriangleAlert } from '@lucide/astro';
+import { getAdminConfigurationError, hasAdminCredentials, isAdminRequest } from '../lib/basic-auth';
+import { DEFAULT_SETTINGS, getSiteSettings } from '../lib/settings';
+import ScrollRail from '../components/ScrollRail.astro';
+
+export const prerender = false;
+
+const configured = hasAdminCredentials();
+const configurationError = getAdminConfigurationError();
+const authorized = configured && isAdminRequest(Astro.request);
+Astro.response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+
+if (!configured) {
+  Astro.response.status = 503;
+} else if (!authorized) {
+  Astro.response.status = 401;
+  Astro.response.headers.set('WWW-Authenticate', 'Basic realm="DTF Transferprint Admin", charset="UTF-8"');
+}
+
+const settings = authorized ? await getSiteSettings() : DEFAULT_SETTINGS;
+const saved = Astro.url.searchParams.get('saved') === '1';
+const error = Astro.url.searchParams.get('error')?.slice(0, 240);
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <meta name="theme-color" content="#090a0c" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>Preise verwalten · DTF Transferprint</title>
+  </head>
+  <body class="min-h-screen bg-paper text-ink">
+    <a class="skip-link" href="#admin-content">Direkt zum Inhalt</a>
+    <ScrollRail />
+    {!configured ? (
+      <main id="admin-content" class="container-shell flex min-h-screen max-w-3xl flex-col justify-center py-16" tabindex="-1">
+        <TriangleAlert size={40} class="text-pink" />
+        <h1 class="font-display mt-6 text-4xl font-extrabold tracking-[-.05em] sm:text-6xl">Adminzugang nicht konfiguriert.</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-black/65">Lege sichere Zugangsdaten in der <code>.env</code>-Datei oder als Runtime-Umgebungsvariablen fest und starte den Server neu. {configurationError}</p>
+      </main>
+    ) : !authorized ? (
+      <main id="admin-content" class="container-shell flex min-h-screen max-w-3xl flex-col justify-center py-16" tabindex="-1">
+        <ShieldCheck size={40} class="text-blue" />
+        <h1 class="font-display mt-6 text-4xl font-extrabold tracking-[-.05em] sm:text-6xl">Authentifizierung erforderlich.</h1>
+        <p class="mt-6 text-lg text-black/65">Öffne diese Seite erneut und gib die in der Umgebung konfigurierten Zugangsdaten ein.</p>
+      </main>
+    ) : (
+      <>
+        <header class="border-b-2 border-ink bg-ink py-5 text-white">
+          <div class="container-shell flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p class="text-xs font-bold text-cyan">GESCHÜTZTER BEREICH</p>
+              <h1 class="font-display mt-1 text-2xl font-extrabold tracking-[-.04em]">Preise & Kennzahlen</h1>
+            </div>
+            <a href="/" class="inline-flex items-center gap-2 text-sm font-bold hover:text-yellow"><ArrowLeft size={17} /> Zur Website</a>
+          </div>
+        </header>
+
+        <main id="admin-content" class="container-shell py-10 sm:py-16" tabindex="-1">
+          {saved && (
+            <div class="mb-8 flex items-center gap-3 border-2 border-ink bg-cyan p-4 font-bold" role="status">
+              <CircleCheck size={22} /> Änderungen wurden gespeichert und sind sofort live.
+            </div>
+          )}
+          {error && (
+            <div class="mb-8 flex items-center gap-3 border-2 border-ink bg-pink p-4 font-bold text-white" role="alert">
+              <TriangleAlert size={22} /> {error}
+            </div>
+          )}
+
+          <form method="POST" action="/api/admin/settings" class="space-y-12">
+            <section>
+              <div class="mb-6 flex items-end justify-between gap-6 border-b-2 border-ink pb-4">
+                <div>
+                  <p class="text-sm font-bold text-blue">GRUNDLAGE</p>
+                  <h2 class="font-display mt-2 text-3xl font-extrabold tracking-[-.04em]">Kalkulation</h2>
+                </div>
+                <p class="hidden max-w-md text-right text-sm text-black/55 md:block">Diese Werte steuern Rechner, Preistext und Mengenregler.</p>
+              </div>
+              <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                <label class="admin-field">Meterpreis in €<input name="basePricePerMeter" type="number" min="0" max="1000000" step="0.01" value={settings.basePricePerMeter} required /></label>
+                <label class="admin-field">Rollenbreite in cm<input name="rollWidthCm" type="number" min="1" max="1000" step="0.1" value={settings.rollWidthCm} required /></label>
+                <label class="admin-field">Maximale Rechner-Menge<input name="maxQuantity" type="number" min="1" max="10000" step="1" value={settings.maxQuantity} required /></label>
+                <label class="admin-field">Preisstand<input name="priceUpdatedLabel" maxlength="80" value={settings.priceUpdatedLabel} required /></label>
+              </div>
+            </section>
+
+            <section>
+              <div class="mb-6 border-b-2 border-ink pb-4">
+                <p class="text-sm font-bold text-pink">FORMATE</p>
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                  <h2 class="font-display mt-2 text-3xl font-extrabold tracking-[-.04em]">Größen & Einzelpreise</h2>
+                  <button id="add-format" type="button" class="btn h-11 min-h-11 rounded-none border-2 border-ink bg-white px-4 font-bold text-ink hover:bg-cyan"><Plus size={18} /> Format hinzufügen</button>
+                </div>
+              </div>
+              <input type="hidden" name="formatCount" value={settings.formats.length} />
+              <div class="overflow-x-auto border-2 border-ink bg-white">
+                <table class="w-full min-w-[820px] border-collapse text-left">
+                  <thead class="bg-ink text-xs text-white">
+                    <tr><th class="p-4">Format</th><th class="p-4">Breite (cm)</th><th class="p-4">Höhe (cm)</th><th class="p-4">Preis pro Stück (€)</th><th class="p-4"><span class="sr-only">Aktionen</span></th></tr>
+                  </thead>
+                  <tbody id="format-rows">
+                    {settings.formats.map((format, index) => (
+                      <tr class="format-row border-t border-black/20">
+                        <td class="p-3"><input class="admin-table-input font-bold" data-field="key" name={`format_key_${index}`} maxlength="20" value={format.key} aria-label={`Formatname, Zeile ${index + 1}`} required /></td>
+                        <td class="p-3"><input class="admin-table-input" data-field="width" name={`format_width_${index}`} type="number" min="0.01" max="1000000" step="0.01" value={format.widthCm} aria-label={`Breite, Zeile ${index + 1}`} required /></td>
+                        <td class="p-3"><input class="admin-table-input" data-field="height" name={`format_height_${index}`} type="number" min="0.01" max="1000000" step="0.01" value={format.heightCm} aria-label={`Höhe, Zeile ${index + 1}`} required /></td>
+                        <td class="p-3"><input class="admin-table-input" data-field="price" name={`format_price_${index}`} type="number" min="0.01" max="1000000" step="0.01" value={format.unitPrice} aria-label={`Preis, Zeile ${index + 1}`} required /></td>
+                        <td class="p-3"><button type="button" class="remove-format btn size-11 min-h-11 rounded-none border border-ink bg-white p-0 text-ink hover:bg-pink hover:text-white" aria-label={`Format ${format.key} entfernen`}><Trash size={18} /></button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p class="mt-3 text-xs text-black/55">Mindestens 1, höchstens 20 Formate. Änderungen werden erst beim Speichern veröffentlicht.</p>
+              <template id="format-template">
+                <tr class="format-row border-t border-black/20">
+                  <td class="p-3"><input class="admin-table-input font-bold" data-field="key" maxlength="20" value="Neues Format" required /></td>
+                  <td class="p-3"><input class="admin-table-input" data-field="width" type="number" min="0.01" max="1000000" step="0.01" value="10" required /></td>
+                  <td class="p-3"><input class="admin-table-input" data-field="height" type="number" min="0.01" max="1000000" step="0.01" value="10" required /></td>
+                  <td class="p-3"><input class="admin-table-input" data-field="price" type="number" min="0.01" max="1000000" step="0.01" value="1" required /></td>
+                  <td class="p-3"><button type="button" class="remove-format btn size-11 min-h-11 rounded-none border border-ink bg-white p-0 text-ink hover:bg-pink hover:text-white" aria-label="Format entfernen"><Trash size={18} /></button></td>
+                </tr>
+              </template>
+            </section>
+
+            <section>
+              <div class="mb-6 border-b-2 border-ink pb-4">
+                <p class="text-sm font-bold text-cyan">VERTRAUEN</p>
+                <h2 class="font-display mt-2 text-3xl font-extrabold tracking-[-.04em]">Kennzahlen</h2>
+              </div>
+              <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                <label class="admin-field">Jahre Erfahrung<input name="experienceYears" type="number" min="0" max="500" step="1" value={settings.experienceYears} required /></label>
+                <label class="admin-field">Lieferzeit-Text<input name="deliveryLabel" maxlength="80" value={settings.deliveryLabel} required /></label>
+                <label class="admin-field">Empfohlene DPI<input name="recommendedDpi" type="number" min="1" max="10000" step="1" value={settings.recommendedDpi} required /></label>
+                <label class="admin-field">Produktionsort<input name="locationLabel" maxlength="80" value={settings.locationLabel} required /></label>
+              </div>
+            </section>
+
+            <div class="sticky bottom-4 flex justify-end">
+              <button type="submit" class="btn h-14 min-h-14 rounded-none border-2 border-ink bg-yellow px-7 font-bold text-ink shadow-[6px_6px_0_#090a0c] hover:bg-cyan">
+                <Save size={19} /> Änderungen speichern
+              </button>
+            </div>
+          </form>
+        </main>
+      </>
+    )}
+  </body>
+</html>
+
+<style>
+  .admin-field { display: grid; gap: .55rem; font-size: .78rem; font-weight: 700; }
+  .admin-field input, .admin-table-input { width: 100%; border: 2px solid #090a0c; background: white; padding: .85rem 1rem; font-size: 1rem; font-weight: 600; }
+  .admin-field input:focus, .admin-table-input:focus { outline: 3px solid #00d7ff; outline-offset: 2px; }
+</style>
+
+<script is:inline nonce={Astro.locals.cspNonce}>
+  const form = document.querySelector('form[action="/api/admin/settings"]');
+  const rows = document.querySelector('#format-rows');
+  const countInput = document.querySelector('input[name="formatCount"]');
+  const addButton = document.querySelector('#add-format');
+  const template = document.querySelector('#format-template');
+  let dirty = false;
+
+  const reindexRows = () => {
+    if (!rows || !countInput) return;
+    const formatRows = [...rows.querySelectorAll('.format-row')];
+    countInput.value = String(formatRows.length);
+    formatRows.forEach((row, index) => {
+      row.querySelectorAll('[data-field]').forEach((input) => {
+        input.name = `format_${input.dataset.field}_${index}`;
+        input.setAttribute('aria-label', `${input.dataset.field}, Zeile ${index + 1}`);
+      });
+      const removeButton = row.querySelector('.remove-format');
+      if (removeButton) removeButton.disabled = formatRows.length === 1;
+    });
+    if (addButton) addButton.disabled = formatRows.length >= 20;
+  };
+
+  rows?.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest('.remove-format');
+    if (!button || rows.querySelectorAll('.format-row').length <= 1) return;
+    button.closest('.format-row')?.remove();
+    dirty = true;
+    reindexRows();
+  });
+
+  addButton?.addEventListener('click', () => {
+    if (!rows || !template || rows.querySelectorAll('.format-row').length >= 20) return;
+    rows.append(template.content.cloneNode(true));
+    dirty = true;
+    reindexRows();
+    rows.lastElementChild?.querySelector('input')?.focus();
+  });
+
+  form?.addEventListener('input', () => { dirty = true; });
+  form?.addEventListener('submit', () => { dirty = false; });
+  window.addEventListener('beforeunload', (event) => {
+    if (!dirty) return;
+    event.preventDefault();
+  });
+  reindexRows();
+</script>

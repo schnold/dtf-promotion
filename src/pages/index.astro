@@ -1,0 +1,417 @@
+---
+import '@fontsource-variable/archivo';
+import '@fontsource-variable/syne';
+import '../styles/global.css';
+import { ArrowUpRight, Factory, FileCheck, Gauge, MapPin, MoveRight, PackageCheck, Palette, ScanLine, Shirt, Sparkles, Upload } from '@lucide/astro';
+import { getSiteSettings } from '../lib/settings';
+import { absoluteSiteUrl, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from '../lib/site';
+import ScrollRail from '../components/ScrollRail.astro';
+
+export const prerender = false;
+
+const shopUrl = 'https://selini-shirt.de/product/dtf-transfer-bestellen';
+const contactUrl = 'https://selini-shirt.de/kontakt/';
+const currentYear = new Date().getFullYear();
+const settings = await getSiteSettings();
+Astro.response.headers.set('Cache-Control', 'no-cache');
+const canonicalUrl = absoluteSiteUrl(Astro.request, '/');
+const socialImageUrl = absoluteSiteUrl(Astro.request, '/images/dtf-hero.webp');
+const formatDimension = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2 });
+const formatPrice = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const priceFormats = settings.formats.map((format) => ({
+  ...format,
+  size: `${formatDimension.format(format.widthCm)} × ${formatDimension.format(format.heightCm)} cm`,
+  area: (format.widthCm * format.heightCm) / 10_000,
+}));
+const defaultFormatIndex = Math.min(2, priceFormats.length - 1);
+const defaultFormat = priceFormats[defaultFormatIndex];
+const initialQuantity = Math.min(10, settings.maxQuantity);
+const initialArea = defaultFormat.area * initialQuantity;
+const initialEstimate = defaultFormat.unitPrice * initialQuantity;
+const initialEstimateLabel = formatPrice.format(initialEstimate);
+const initialEstimateLength = initialEstimateLabel.length >= 12 ? 'very-long' : initialEstimateLabel.length >= 8 ? 'long' : 'default';
+const facts = [
+  [`${settings.experienceYears}+`, 'Jahre Druckerfahrung'],
+  [settings.deliveryLabel, 'angegebene Lieferung'],
+  [`${settings.recommendedDpi} dpi`, 'empfohlene Auflösung'],
+  [settings.locationLabel, 'eigene Produktion'],
+];
+const tickerItems = [
+  ['DTF AUS EIGENER PRODUKTION', 'text-pink'],
+  ['BERLINER WERKSTATT', 'text-blue'],
+  ['BRILLANTE FARBEN', 'text-pink'],
+  [`METERWARE · ${formatDimension.format(settings.rollWidthCm)} CM BREIT`, 'text-blue'],
+  ['FAIRE STAFFELPREISE', 'text-pink'],
+];
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={SITE_DESCRIPTION} />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#090a0c" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={SITE_TITLE} />
+    <meta property="og:description" content={SITE_DESCRIPTION} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:width" content="1983" />
+    <meta property="og:image:height" content="793" />
+    <meta property="og:image:alt" content="Farbstarker DTF-Transfer auf einem schwarzen Shirt" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={SITE_TITLE} />
+    <meta name="twitter:description" content={SITE_DESCRIPTION} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" as="image" type="image/webp" href="/images/dtf-hero.webp" fetchpriority="high" />
+    <title>{SITE_TITLE}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Direkt zum Inhalt</a>
+    <ScrollRail />
+    <div class="rainbow-line fixed inset-x-0 top-0 z-[70] h-1"></div>
+
+    <div class="overflow-hidden border-b border-white/15 bg-paper py-2 text-ink" role="region" aria-label="Service-Vorteile">
+      <p class="sr-only">DTF aus eigener Produktion, Berliner Werkstatt, brillante Farben, Meterware mit {formatDimension.format(settings.rollWidthCm)} Zentimetern Breite und faire Staffelpreise.</p>
+      <div class="ticker-track whitespace-nowrap text-[11px] font-bold tracking-[.12em]" aria-hidden="true">
+        {Array.from({ length: 2 }).map(() => (
+          <div class="ticker-group">
+            {Array.from({ length: 2 }).flatMap(() => tickerItems).map(([label, color]) => (
+              <><span>{label}</span><span class={color}>✦</span></>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <header class="absolute inset-x-0 top-9 z-50">
+      <nav class="container-shell flex items-center justify-between py-5" aria-label="Hauptnavigation">
+        <a href="#top" class="font-display text-lg font-extrabold tracking-[-.06em] sm:text-2xl">DTF<span class="text-yellow">/</span><span class="hidden min-[390px]:inline">TRANSFERPRINT</span><span class="min-[390px]:hidden">PRINT</span></a>
+        <div class="hidden items-center gap-8 text-sm font-semibold lg:flex">
+          <a href="#preise" class="hover:text-yellow">Preise</a>
+          <a href="#produktion" class="hover:text-cyan">Produktion</a>
+          <a href="#wissen" class="hover:text-pink">DTF verstehen</a>
+        </div>
+        <a href={shopUrl} class="btn h-11 min-h-11 rounded-none border-0 bg-yellow px-5 text-sm font-bold text-ink shadow-none hover:bg-white">
+          <span class="hidden sm:inline">Zum </span>Shop <ArrowUpRight size={17} stroke-width={2.5} />
+        </a>
+      </nav>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+      <span id="top" class="sr-only" aria-hidden="true"></span>
+      <section class="relative min-h-[920px] overflow-hidden border-b border-white/20 bg-black sm:min-h-[860px]">
+        <img src="/images/dtf-hero.webp" width="1983" height="793" fetchpriority="high" alt="Frisch produzierter, farbintensiver DTF-Transfer wird von einem schwarzen Shirt abgezogen" class="absolute inset-0 h-full w-full object-cover object-[58%_center] opacity-80" />
+        <div class="absolute inset-0 bg-[linear-gradient(90deg,#090a0c_0%,rgba(9,10,12,.9)_30%,rgba(9,10,12,.3)_62%,rgba(9,10,12,.42)_100%)]"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(0deg,#090a0c_0%,transparent_30%)]"></div>
+
+        <div class="container-shell relative z-10 flex min-h-[920px] flex-col justify-end pb-10 pt-40 sm:min-h-[860px] sm:pb-14">
+          <div class="mb-auto flex items-center gap-3 pt-20 text-sm font-semibold sm:pt-16">
+            <span class="inline-block size-2 animate-pulse rounded-full bg-cyan"></span>
+            Produziert in Berlin. Direkt von Selini-Shirt.
+          </div>
+
+          <div class="max-w-[1050px]">
+            <h1 class="hero-word text-[clamp(3.2rem,13vw,12.5rem)] uppercase">
+              DTF, DAS<br/><span class="ink-outline">KNALLT.</span>
+            </h1>
+            <div class="mt-8 grid gap-8 border-t border-white/40 pt-6 md:grid-cols-[1fr_auto] md:items-end">
+              <p class="max-w-xl text-lg leading-relaxed text-white/80 sm:text-xl">
+                Volle Farbe. Feine Details. Faire Meterpreise. Deine Motive werden in unserer Berliner Werkstatt gedruckt—bereit für Presse, Shirt und nächsten Drop.
+              </p>
+              <div class="flex flex-wrap gap-3">
+                <a href="#preise" class="btn h-14 min-h-14 rounded-none border-0 bg-pink px-7 font-bold text-white shadow-none hover:bg-yellow hover:text-ink">Preis entdecken <MoveRight size={19} /></a>
+                <a href="#produktion" class="btn h-14 min-h-14 rounded-none border border-white/50 bg-black/20 px-6 text-white backdrop-blur-md hover:bg-white hover:text-ink">So produzieren wir</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-12 flex items-center justify-between text-xs font-bold text-white/65">
+            <span>SCROLL, UM DIE FOLIE ZU LÜFTEN</span>
+            <span class="hidden items-center gap-2 sm:flex"><Shirt size={17} /> Baumwolle · Polyester · Mischgewebe</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-b border-white/20 bg-paper text-ink">
+        <div class="container-shell grid grid-cols-2 lg:grid-cols-4">
+          {facts.map(([value, label], i) => (
+            <div class:list={["px-4 py-8 sm:px-8 sm:py-11", i % 2 === 0 ? 'border-r border-black/20' : '', i < 2 ? 'border-b border-black/20 lg:border-b-0' : '', i === 1 ? 'lg:border-r' : '', i === 2 ? 'lg:border-r' : '']}>
+              <div class="font-display text-3xl font-extrabold tracking-[-.05em] sm:text-5xl">{value}</div>
+              <div class="mt-2 text-xs font-semibold text-black/60 sm:text-sm">{label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="preise" class="bg-blue py-20 text-white sm:py-28">
+        <div class="container-shell">
+          <div class="reveal grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+            <div>
+              <span class="font-display text-sm font-bold">PREISLABOR</span>
+              <h2 class="font-display mt-4 max-w-3xl text-5xl font-extrabold leading-[.92] tracking-[-.065em] sm:text-7xl">Was kostet deine Fläche?</h2>
+            </div>
+            <p class="max-w-2xl text-lg leading-relaxed text-white/75 lg:justify-self-end">Vergleiche Formate auf Basis des veröffentlichten Meterpreises. Für Gang Sheets gilt: Je besser du den Raum nutzt, desto mehr Motive holst du aus jedem Meter.</p>
+          </div>
+
+          <div class="reveal mt-12 grid overflow-hidden border-2 border-white bg-ink lg:grid-cols-[1.1fr_.9fr]">
+            <div class="p-5 sm:p-9 lg:p-12">
+              <p class="mb-5 text-sm font-bold">FORMAT WÄHLEN</p>
+              <div class="flex flex-wrap gap-2" id="format-tabs">
+                {priceFormats.map((item, i) => (
+                  <button type="button" class="price-tab min-w-16 border border-white/30 px-4 py-3 font-display text-lg font-bold transition-colors hover:border-yellow" data-format={item.key} data-area={item.area} data-unit-price={item.unitPrice} data-size={item.size} aria-label={`${item.key}, ${item.size}, ${formatPrice.format(item.unitPrice)} Euro pro Stück`} aria-pressed={i === defaultFormatIndex ? 'true' : 'false'}>{item.key}</button>
+                ))}
+              </div>
+
+              <div class="mt-10">
+                <div class="mb-4 flex items-end justify-between gap-4">
+                  <label for="quantity" class="text-sm font-bold">ANZAHL FLÄCHEN</label>
+                  <output id="quantity-output" for="quantity" class="font-display text-4xl font-extrabold">{initialQuantity}×</output>
+                </div>
+                <input id="quantity" type="range" min="1" max={settings.maxQuantity} value={initialQuantity} class="range range-warning range-sm w-full" aria-label="Anzahl der Flächen" />
+                <div class="mt-3 flex justify-between text-xs text-white/50"><span>1</span><span>{settings.maxQuantity}</span></div>
+              </div>
+
+              <div class="mt-10 grid gap-px bg-white/20 sm:grid-cols-2">
+                <div class="bg-ink p-5"><span class="text-xs text-white/55">Format</span><strong id="selected-size" class="mt-2 block text-lg">{defaultFormat.size}</strong></div>
+                <div class="bg-ink p-5"><span class="text-xs text-white/55">Fläche gesamt</span><strong id="total-area" class="mt-2 block text-lg">{formatPrice.format(initialArea)} m²</strong></div>
+              </div>
+            </div>
+
+            <aside class="price-result relative flex min-h-[410px] min-w-0 flex-col justify-between overflow-hidden bg-yellow p-6 text-ink sm:p-12">
+              <div class="absolute -right-16 -top-16 size-56 rounded-full bg-pink mix-blend-multiply blur-2xl"></div>
+              <div class="relative">
+                <p class="text-sm font-bold">REINER FLÄCHENVERGLEICH</p>
+                <div class="mt-7 flex min-w-0 items-start" aria-live="polite" aria-atomic="true">
+                  <span class="mt-1 shrink-0 text-xl font-bold sm:mt-2 sm:text-2xl">€</span>
+                  <strong id="estimate" class="price-number min-w-0 font-display font-extrabold leading-none" data-length={initialEstimateLength}>{initialEstimateLabel}</strong>
+                </div>
+                <p class="mt-3 max-w-sm text-sm leading-relaxed text-black/65">Berechnet aus Formatpreis × Menge. Staffel und finaler Bestellpreis werden im Shop ausgewiesen.</p>
+              </div>
+              <a href={shopUrl} class="btn relative mt-8 h-14 min-h-14 w-full rounded-none border-0 bg-ink text-white hover:bg-pink">Finalen Preis im Shop prüfen <ArrowUpRight size={18} /></a>
+            </aside>
+          </div>
+
+          <div class="mt-5 flex flex-col gap-3 text-xs text-white/65 sm:flex-row sm:items-center sm:justify-between">
+            <p>Basis-Meterpreis: {formatPrice.format(settings.basePricePerMeter)} € pro Laufmeter ({formatDimension.format(settings.rollWidthCm)} cm Breite), Stand {settings.priceUpdatedLabel}.</p>
+            <p>Gewerbliche Preise ggf. zzgl. MwSt.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="produktion" class="overflow-hidden bg-paper py-20 text-ink sm:py-28">
+        <div class="container-shell">
+          <div class="reveal grid gap-12 lg:grid-cols-2 lg:items-center">
+            <div>
+              <div class="flex items-center gap-3 text-sm font-bold"><Factory size={20} /> NICHT WEITERGEREICHT. SELBST GEMACHT.</div>
+              <h2 class="font-display mt-6 text-5xl font-extrabold leading-[.93] tracking-[-.065em] sm:text-7xl">Die Maschine steht bei uns.</h2>
+              <p class="mt-7 max-w-xl text-lg leading-relaxed text-black/65">Kurze Wege sind kein Slogan, sondern ein Produktionsvorteil. Selini-Shirt prüft, druckt und verarbeitet in der eigenen Berliner Werkstatt—mit direktem Blick auf Farbe, Weißunterlegung und saubere Konturen.</p>
+              <div class="mt-9 flex flex-wrap gap-3">
+                <span class="badge h-auto rounded-none border-black px-4 py-3 font-semibold">Eigene Produktion</span>
+                <span class="badge h-auto rounded-none border-black px-4 py-3 font-semibold">Persönliche Beratung</span>
+                <span class="badge h-auto rounded-none border-black px-4 py-3 font-semibold">Made in Berlin</span>
+              </div>
+            </div>
+
+            <figure class="relative border-2 border-ink bg-ink p-3 shadow-[10px_10px_0_#ff2b91] sm:p-5 sm:shadow-[14px_14px_0_#ff2b91]">
+              <div class="overflow-hidden">
+                <img src="/images/dtf-production.webp" width="1672" height="941" loading="lazy" decoding="async" alt="Rollendrucker produziert eine farbige Transferfolie in einer professionellen Druckwerkstatt" class="aspect-[16/10] w-full object-cover transition-transform duration-700 hover:scale-[1.025]" />
+              </div>
+              <figcaption class="flex flex-wrap items-center justify-between gap-2 px-1 pb-1 pt-4 text-xs font-bold text-white/65">
+                <span>DTF-PRODUKTION · SYMBOLBILD</span><span>CMYK + WEISS</span>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section id="wissen" class="border-y border-white/20 bg-ink py-20 sm:py-28">
+        <div class="container-shell">
+          <div class="reveal max-w-4xl">
+            <p class="text-cyan font-bold">VON DATEI ZU TRANSFER</p>
+            <h2 class="font-display mt-5 text-5xl font-extrabold leading-[.94] tracking-[-.06em] sm:text-7xl">Vier Schritte. Ein sauberer Druck.</h2>
+          </div>
+          <div class="mt-14 grid border-l border-t border-white/20 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              [Upload, '1', 'Datei hochladen', `PNG oder PDF, idealerweise ${settings.recommendedDpi} dpi und für verlässliche Farben im CMYK-Profil.`],
+              [FileCheck, '2', 'Datencheck', 'Konturen, Transparenzen und Auflösung werden auf Produktionstauglichkeit geprüft.'],
+              [Palette, '3', 'Drucken & pudern', 'Farbe plus Weißunterlegung kommen auf Film, danach folgt der Kleberauftrag.'],
+              [PackageCheck, '4', 'Pressbereit erhalten', 'Transfer positionieren, mit passenden Parametern pressen und sauber abziehen.'],
+            ].map(([Icon, no, title, text]) => (
+              <article class="group relative min-h-80 border-b border-r border-white/20 p-7 sm:p-9">
+                <div class="flex items-start justify-between"><Icon size={30} class="text-yellow" /><span class="font-display text-6xl font-extrabold text-white/10">{no}</span></div>
+                <h3 class="font-display mt-16 text-2xl font-bold">{title}</h3>
+                <p class="mt-4 text-sm leading-relaxed text-white/60">{text}</p>
+                <div class="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-pink transition-transform duration-500 group-hover:scale-x-100"></div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-cyan py-20 text-ink sm:py-28">
+        <div class="container-shell">
+          <div class="reveal grid gap-12 lg:grid-cols-[.9fr_1.1fr]">
+            <div class="lg:sticky lg:top-10 lg:self-start">
+              <p class="font-bold">WARUM DTF?</p>
+              <h2 class="font-display mt-5 text-5xl font-extrabold leading-[.93] tracking-[-.06em] sm:text-7xl">Ein Verfahren. Viele Stoffe.</h2>
+              <p class="mt-6 max-w-lg text-lg leading-relaxed text-black/65">DTF spielt seine Stärke bei farbigen Motiven, feinen Details sowie kleinen bis mittleren Auflagen aus—ohne für jede Farbe ein eigenes Sieb einzurichten.</p>
+              <figure class="mt-9 overflow-hidden border-2 border-ink bg-paper">
+                <img src="/images/dtf-gangsheet.webp" width="1400" height="1050" loading="lazy" decoding="async" alt="Farbig bedruckter Gang Sheet neben einem schwarzen Shirt mit fertigem Transfermotiv" class="aspect-[4/3] w-full object-cover" />
+                <figcaption class="flex justify-between gap-4 border-t-2 border-ink px-4 py-3 text-xs font-bold"><span>GANG SHEET + ERGEBNIS</span><span>SYMBOLBILD</span></figcaption>
+              </figure>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              {[
+                [Sparkles, 'Fotorealistische Farbe', 'Verläufe, kleine Details und satte Flächen in einem Motiv.'],
+                [ScanLine, 'Helle & dunkle Textilien', 'Die Weißunterlegung sorgt für Deckkraft auf farbigen Stoffen.'],
+                [Gauge, 'Kleine Mengen sinnvoll', 'Digitale Produktion ohne klassischen Siebaufbau pro Farbe.'],
+                [Shirt, 'Breite Materialwahl', 'Geeignet für Baumwolle, Polyester und viele Mischgewebe.'],
+              ].map(([Icon, title, text], i) => (
+                <article class:list={["film-card relative overflow-hidden border-2 border-ink p-7", i === 1 ? 'bg-pink text-white' : i === 2 ? 'bg-yellow' : 'bg-paper']}>
+                  <Icon size={28} />
+                  <h3 class="font-display mt-16 text-2xl font-bold">{title}</h3>
+                  <p class:list={["mt-3 text-sm leading-relaxed", i === 1 ? 'text-white/75' : 'text-black/65']}>{text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-paper py-20 text-ink sm:py-28">
+        <div class="container-shell grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
+          <div class="reveal">
+            <p class="font-bold">GUT ZU WISSEN</p>
+            <h2 class="font-display mt-5 text-5xl font-extrabold leading-[.94] tracking-[-.06em] sm:text-6xl">Kurz gefragt. Klar beantwortet.</h2>
+            <a href={contactUrl} class="mt-8 inline-flex items-center gap-2 border-b-2 border-ink pb-1 font-bold hover:border-pink hover:text-pink">Noch eine Frage? Direkt zu Selini <ArrowUpRight size={18} /></a>
+          </div>
+          <div class="border-t-2 border-ink">
+            {[
+              ['Welche Datei liefert das beste Ergebnis?', `Selini-Shirt empfiehlt druckfertige PNG- oder PDF-Dateien mit mindestens ${settings.recommendedDpi} dpi. Schriften sollten in Pfade umgewandelt sein; für verlässliche Farben ist CMYK sinnvoll.`],
+              ['Was ist ein Gang Sheet?', 'Auf einem Gang Sheet ordnest du mehrere, auch unterschiedliche Motive auf einer Druckbahn an. Gute Flächennutzung senkt den rechnerischen Preis pro Motiv.'],
+              ['Auf welche Stoffe kann ich DTF pressen?', 'DTF eignet sich für Baumwolle, Polyester und viele Mischgewebe. Bei empfindlichen oder beschichteten Stoffen solltest du Temperatur und Presszeit vorab testen.'],
+              ['Wie pflege ich den fertigen Druck?', 'Textil auf links bei maximal 40 °C waschen, mildes Waschmittel verwenden, nicht direkt über den Druck bügeln und möglichst lufttrocknen.'],
+            ].map(([q, a]) => (
+              <details class="group border-b-2 border-ink py-2">
+                <summary class="flex cursor-pointer items-center justify-between gap-6 py-5 text-left font-display text-xl font-bold sm:text-2xl">
+                  {q}<span class="faq-plus text-3xl font-light transition-transform">+</span>
+                </summary>
+                <p class="max-w-2xl pb-6 pr-10 leading-relaxed text-black/65">{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="relative overflow-hidden bg-pink py-20 text-white sm:py-28">
+        <div class="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,.35)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.35)_1px,transparent_1px)] [background-size:42px_42px]"></div>
+        <div class="container-shell relative">
+          <div class="reveal flex flex-col items-start gap-10 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div class="flex items-center gap-2 font-bold"><MapPin size={20} /> BERLIN DRUCKT FÜR DICH</div>
+              <h2 class="font-display mt-6 max-w-5xl text-[clamp(3rem,10vw,9rem)] font-extrabold leading-[.82] tracking-[-.075em]">DEIN MOTIV.<br/>UNSER FILM.</h2>
+            </div>
+            <a href={shopUrl} class="btn h-16 min-h-16 shrink-0 rounded-none border-2 border-ink bg-yellow px-8 text-base font-bold text-ink shadow-[8px_8px_0_#090a0c] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0_#090a0c]">Bei Selini-Shirt bestellen <ArrowUpRight size={20} /></a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-white/20 bg-ink py-12 text-white sm:py-16">
+      <div class="container-shell grid gap-12 border-b border-white/20 pb-12 md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div>
+          <a href="#top" class="font-display text-2xl font-extrabold tracking-[-.06em]">DTF<span class="text-yellow">/</span>TRANSFERPRINT</a>
+          <p class="mt-5 max-w-sm text-sm leading-relaxed text-white/55">DTF-Transfers aus der Berliner Werkstatt von Selini-Shirt. Für Firmen, Vereine, Merch und alle, die selbst pressen.</p>
+          <a href={shopUrl} class="mt-6 inline-flex items-center gap-2 font-bold text-yellow hover:text-white">DTF bestellen <ArrowUpRight size={16} /></a>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-white/45">Kontakt</h2>
+          <address class="mt-4 space-y-2 text-sm not-italic leading-relaxed">
+            <p>BYSELINI UG<br/>Klingsorstraße 31–33<br/>12167 Berlin</p>
+            <a class="block hover:text-cyan" href="tel:+491791298038">+49 (0) 179 1298038</a>
+            <a class="block break-all hover:text-cyan" href="mailto:info@byselini.de">info@byselini.de</a>
+          </address>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-white/45">Selini-Shirt</h2>
+          <nav class="mt-4 flex flex-col items-start gap-3 text-sm" aria-label="Unternehmen">
+            <a href="https://selini-shirt.de/" class="hover:text-cyan">Startseite</a>
+            <a href="https://selini-shirt.de/products/" class="hover:text-cyan">Alle Produkte</a>
+            <a href="https://selini-shirt.de/ueber-uns/" class="hover:text-cyan">Über uns</a>
+            <a href={contactUrl} class="hover:text-cyan">Kontakt</a>
+          </nav>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-white/45">Rechtliches</h2>
+          <nav class="mt-4 flex flex-col items-start gap-3 text-sm" aria-label="Rechtliche Informationen">
+            <a href="https://selini-shirt.de/rechtliches/impressum" class="hover:text-cyan">Impressum</a>
+            <a href="https://selini-shirt.de/rechtliches/datenschutz" class="hover:text-cyan">Datenschutz</a>
+            <a href="https://selini-shirt.de/rechtliches/agb" class="hover:text-cyan">AGB</a>
+            <a href="https://selini-shirt.de/rechtliches/nutzungsbedingungen" class="hover:text-cyan">Nutzungsbedingungen</a>
+            <a href="https://selini-shirt.de/rechtliches/cookies" class="hover:text-cyan">Cookie-Richtlinie</a>
+          </nav>
+        </div>
+      </div>
+      <div class="container-shell flex flex-col gap-3 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {currentYear} BYSELINI UG. Alle Rechte vorbehalten.</p>
+        <p>Made in Berlin</p>
+      </div>
+    </footer>
+
+    <script is:inline nonce={Astro.locals.cspNonce}>
+      const tabs = [...document.querySelectorAll('.price-tab')];
+      const slider = document.querySelector('#quantity');
+      const quantityOutput = document.querySelector('#quantity-output');
+      const estimate = document.querySelector('#estimate');
+      const selectedSize = document.querySelector('#selected-size');
+      const totalArea = document.querySelector('#total-area');
+      let selected = tabs.find((tab) => tab.getAttribute('aria-pressed') === 'true') ?? tabs[0];
+
+      const formatNumber = (value) => new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+      const updatePrice = () => {
+        if (!slider || !quantityOutput || !estimate || !selectedSize || !totalArea || !selected) return;
+        const quantity = Number(slider.value);
+        const area = Number(selected.dataset.area);
+        const unitPrice = Number(selected.dataset.unitPrice);
+        const calculatedArea = area * quantity;
+        quantityOutput.value = `${quantity}×`;
+        selectedSize.textContent = selected.dataset.size ?? '';
+        totalArea.textContent = `${formatNumber(calculatedArea)} m²`;
+        const formattedEstimate = formatNumber(unitPrice * quantity);
+        estimate.textContent = formattedEstimate;
+        estimate.dataset.length = formattedEstimate.length >= 12 ? 'very-long' : formattedEstimate.length >= 8 ? 'long' : 'default';
+      };
+
+      tabs.forEach((tab) => tab.addEventListener('click', () => {
+        tabs.forEach((item) => item.setAttribute('aria-pressed', 'false'));
+        tab.setAttribute('aria-pressed', 'true');
+        selected = tab;
+        updatePrice();
+      }));
+      slider?.addEventListener('input', updatePrice);
+      updatePrice();
+
+      const revealElements = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: .13 });
+        revealElements.forEach((element) => observer.observe(element));
+      } else {
+        revealElements.forEach((element) => element.classList.add('is-visible'));
+      }
+    </script>
+  </body>
+</html>

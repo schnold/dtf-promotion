@@ -1,0 +1,19 @@
+{
+  "name": "DTF Transferprint by Selini-Shirt",
+  "short_name": "DTF Transferprint",
+  "description": "DTF Transfers aus eigener Berliner Produktion.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#090a0c",
+  "theme_color": "#090a0c",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
