@@ -9,7 +9,7 @@
     "preview": "astro dev"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.19.0"
   },
   "dependencies": {
     "@astrojs/netlify": "^8.2.9",
