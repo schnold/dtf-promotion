@@ -5,7 +5,7 @@ import '../styles/global.css';
 import { ArrowUpRight, Boxes, Factory, FileCheck, FileImage, Flame, Hand, MapPin, MoveRight, Palette, Ruler, Shirt, Star, Store, Thermometer, Timer, Upload, Users, WashingMachine } from '@lucide/astro';
 import { absoluteSiteUrl, buildSeoDescription, buildSeoTitle, type SiteView } from '../lib/site';
 import { fill } from '../lib/cms';
-import ScrollRail from './ScrollRail.astro';
+import BerlinBear from './BerlinBear.astro';
 import SeliniLogo from './SeliniLogo.astro';
 
 interface Props {
@@ -215,7 +215,6 @@ const jsonLd = JSON.stringify({
   <body>
     <a class="skip-link" href="#main-content">{cms.site.skipLink}</a>
     {preview && <p class="preview-banner" role="status">Vorschau des Entwurfs – nicht öffentlich. <a href="/admin">Zurück zum Admin</a></p>}
-    <ScrollRail />
     <div class="rainbow-line fixed inset-x-0 top-0 z-[70] h-1"></div>
 
     <div class="overflow-hidden border-b border-white/15 bg-paper py-2 text-ink" role="region" aria-label={page.ticker.ariaLabel}>
@@ -647,7 +646,7 @@ const jsonLd = JSON.stringify({
       </div>
       <div class="container-shell flex flex-col gap-3 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
         <p>{fill(footer.copyright, { year: currentYear, legalName: COMPANY.legalName, priceStand })}</p>
-        <p>{footer.madeIn}</p>
+        <p class="flex items-center gap-2">{footer.madeIn} <BerlinBear class="h-5 w-auto text-paper/80" /></p>
       </div>
     </footer>
 

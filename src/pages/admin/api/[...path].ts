@@ -1,6 +1,7 @@
 import type { APIContext, APIRoute } from 'astro';
 import QRCode from 'qrcode';
 import { createFirstAdmin, setupAllowed, userCount } from '../../../lib/admin-setup';
+import { createAccount, deleteAccount, listAccounts, resetPassword, resetTwoFactor, setRole } from '../../../lib/admin-users';
 import {
   audit, checkLinks, checkLive, contentState, discardDraft, HttpError, listAudit, listMedia, listVersions, MAX_UPLOAD,
   publish, restoreVersion, saveDraft, setLiveUrl, siteSummary, SITE, uploadImage,
@@ -13,7 +14,8 @@ export const prerender = false;
 
 /**
  * JSON API of the admin (client: public/admin/app.js and public/admin/login.js).
- * Every route except the login helpers needs a session with completed two-factor setup.
+ * Every route except the login helpers needs a session. Two-factor login is optional per account:
+ * Better Auth only creates the session after the code when the account has it switched on.
  * Writes must come from this origin and carry the `x-admin: 1` header (CSRF).
  */
 
@@ -49,7 +51,8 @@ function withCookies(response: Response, from: Response): Response {
 async function authError(res: Response): Promise<never> {
   const body = (await res.json().catch(() => ({}))) as { message?: string; code?: string };
   const messages: Record<string, string> = {
-    INVALID_PASSWORD: 'Das aktuelle Passwort stimmt nicht.',
+    INVALID_PASSWORD: 'Das Passwort stimmt nicht.',
+    INVALID_CODE: 'Der Code stimmt nicht. Bitte den aktuellen Code aus der App eingeben.',
     PASSWORD_TOO_SHORT: 'Das neue Passwort ist zu kurz (mind. 12 Zeichen).',
     PASSWORD_TOO_LONG: 'Das neue Passwort ist zu lang.',
   };
@@ -70,18 +73,6 @@ async function handlePublic(ctx: APIContext, route: string, user: AdminUser | nu
     await audit('setup_admin', { ip: clientIp(ctx), detail: created.email });
     return json({ ok: true });
   }
-  if (route === 'POST enroll') {
-    // Signed in with password, 2FA not set up yet: create the TOTP secret and show it as QR code.
-    checkWrite(ctx);
-    if (!user) throw new HttpError(401, 'Bitte zuerst mit E-Mail und Passwort anmelden.');
-    if (user.twoFactorEnabled) throw new HttpError(400, 'Die Zwei-Faktor-Anmeldung ist bereits eingerichtet.');
-    const body = await readJson(ctx.request, 4096);
-    const res = await getAuth().api.enableTwoFactor({ body: { password: String(body.password ?? '') }, headers: ctx.request.headers, asResponse: true });
-    if (!res.ok) await authError(res);
-    const data = (await res.json()) as { totpURI: string; backupCodes: string[] };
-    const secret = new URL(data.totpURI).searchParams.get('secret') ?? '';
-    return withCookies(json({ qr: await QRCode.toDataURL(data.totpURI, { margin: 1, width: 240 }), secret, backupCodes: data.backupCodes }), res);
-  }
   if (route === 'POST logout') {
     checkWrite(ctx);
     const res = await getAuth().api.signOut({ headers: ctx.request.headers, asResponse: true });
@@ -101,11 +92,73 @@ async function handle(ctx: APIContext): Promise<Response> {
   const early = await handlePublic(ctx, route, user);
   if (early) return early;
 
-  if (!user || !user.twoFactorEnabled) throw new HttpError(401, 'Bitte anmelden.');
+  if (!user) throw new HttpError(401, 'Bitte anmelden.');
   if (method !== 'GET') checkWrite(ctx);
   const ip = clientIp(ctx);
 
-  if (route === 'GET me') return json({ email: user.email, name: user.name, role: user.role });
+  if (route === 'GET me') return json({ id: user.id, email: user.email, name: user.name, role: user.role, twoFactorEnabled: user.twoFactorEnabled });
+
+  // Two-factor login (optional): start → QR code + backup codes, confirm with a code from the app, or switch off.
+  if (route === 'POST me/2fa/start') {
+    if (user.twoFactorEnabled) throw new HttpError(400, 'Die Zwei-Faktor-Anmeldung ist bereits eingeschaltet.');
+    const body = await readJson(ctx.request, 4096);
+    const res = await getAuth().api.enableTwoFactor({ body: { password: String(body.password ?? '') }, headers: ctx.request.headers, asResponse: true });
+    if (!res.ok) await authError(res);
+    const data = (await res.json()) as { totpURI: string; backupCodes: string[] };
+    const secret = new URL(data.totpURI).searchParams.get('secret') ?? '';
+    return withCookies(json({ qr: await QRCode.toDataURL(data.totpURI, { margin: 1, width: 240 }), secret, backupCodes: data.backupCodes }), res);
+  }
+
+  if (route === 'POST me/2fa/confirm') {
+    if (user.twoFactorEnabled) throw new HttpError(400, 'Die Zwei-Faktor-Anmeldung ist bereits eingeschaltet.');
+    const body = await readJson(ctx.request, 4096);
+    const res = await getAuth().api.verifyTOTP({ body: { code: String(body.code ?? '').replace(/s/g, '') }, headers: ctx.request.headers, asResponse: true });
+    if (!res.ok) await authError(res);
+    await audit('totp_enrolled', { user, ip });
+    return withCookies(json({ ok: true }), res);
+  }
+
+  if (route === 'POST me/2fa/disable') {
+    if (!user.twoFactorEnabled) throw new HttpError(400, 'Die Zwei-Faktor-Anmeldung ist schon ausgeschaltet.');
+    const body = await readJson(ctx.request, 4096);
+    const res = await getAuth().api.disableTwoFactor({ body: { password: String(body.password ?? '') }, headers: ctx.request.headers, asResponse: true });
+    if (!res.ok) await authError(res);
+    await audit('totp_disabled', { user, ip });
+    return withCookies(json({ ok: true }), res);
+  }
+
+  // People with access (admins only).
+  if (parts[0] === 'users') {
+    if (user.role !== 'admin') throw new HttpError(403, 'Nur für Administratoren.');
+    const id = parts[1] ?? '';
+    if (route === 'GET users') return json(await listAccounts());
+    if (route === 'POST users') {
+      const created = await createAccount(await readJson(ctx.request, 4096));
+      await audit('user_created', { user, ip, detail: created.email });
+      return json(created);
+    }
+    if (method === 'POST' && parts[2] === 'password' && parts.length === 3) {
+      const target = await resetPassword(id, (await readJson(ctx.request, 4096)).password);
+      await audit('password_reset', { user, ip, detail: target.email });
+      return json({ ok: true });
+    }
+    if (method === 'POST' && parts[2] === '2fa-reset' && parts.length === 3) {
+      const target = await resetTwoFactor(id);
+      await audit('totp_reset', { user, ip, detail: target.email });
+      return json({ ok: true });
+    }
+    if (method === 'PUT' && parts[2] === 'role' && parts.length === 3) {
+      const target = await setRole(user.id, id, (await readJson(ctx.request, 4096)).role);
+      await audit('role_changed', { user, ip, detail: `${target.email}: ${target.role}` });
+      return json({ ok: true });
+    }
+    if (method === 'DELETE' && parts.length === 2) {
+      const target = await deleteAccount(user.id, id);
+      await audit('user_deleted', { user, ip, detail: target.email });
+      return json({ ok: true });
+    }
+    throw new HttpError(404, 'Unbekannte Aktion');
+  }
 
   if (route === 'POST me/password') {
     const body = await readJson(ctx.request, 4096);

@@ -342,3 +342,20 @@ kbd { font: 11px var(--mono); padding: 1px 5px; border: 1px solid currentColor; 
 .brand-selini:hover { opacity: 1; }
 .brand-selini img { height: 24px; width: auto; display: block; }
 .login-brand { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* account dialog + people */
+#account { width: min(560px, calc(100vw - 32px)); }
+.account-body { display: grid; gap: 18px; }
+.account-section + .account-section { border-top: 1px solid var(--line); padding-top: 16px; }
+.account-section h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; font-size: 15px; }
+.account-section .card-help { margin: 0 0 10px; }
+.account-form { display: grid; gap: 10px; }
+.account-form .field { margin: 0; }
+.users-table td { vertical-align: middle; }
+.users-table .row-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.users-table select { padding: 4px 6px; border: 1px solid var(--line-2); border-radius: 6px; background: var(--panel); color: var(--ink); }
+.user-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; align-items: end; }
+.user-form .field { margin: 0; }
+.user-form select { width: 100%; }
+.btn-danger { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 45%, transparent); }
+.btn-danger:hover { background: var(--bad-bg); border-color: var(--bad); }

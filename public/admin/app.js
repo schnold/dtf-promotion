@@ -174,6 +174,7 @@ function parseRoute() {
   const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
   if (parts[0] === 's' && parts[1]) return { name: 'site', site: parts[1], view: parts.slice(2).join('/') || '' };
   if (parts[0] === 'protokoll') return { name: 'audit' };
+  if (parts[0] === 'benutzer') return { name: 'users' };
   return { name: 'overview' };
 }
 function go(siteId, view = '') {
@@ -252,6 +253,10 @@ function render() {
     renderAudit();
     return;
   }
+  if (S.route.name === 'users') {
+    renderUsers();
+    return;
+  }
   const site = S.sites.find((s) => s.id === S.route.site);
   if (!site) {
     app.replaceChildren(h('div.empty-state', {}, 'Unbekannte Website.'));
@@ -268,6 +273,7 @@ function renderTabs() {
     ...S.sites.map((site) =>
       h('a.tab', { href: `#/s/${site.id}`, 'aria-current': current === site.id ? 'page' : null, style: { '--tab-accent': site.accent } },
         h('span.tab-dot', { 'aria-hidden': 'true' }), site.label, h('span.tab-badge', { 'data-tab-badge': site.id, hidden: true, title: 'ungespeicherte Änderungen' }))),
+    S.me?.role === 'admin' ? h('a.tab', { href: '#/benutzer', 'aria-current': current === 'users' ? 'page' : null }, 'Benutzer') : null,
     S.me?.role === 'admin' ? h('a.tab', { href: '#/protokoll', 'aria-current': current === 'audit' ? 'page' : null }, 'Protokoll') : null,
   );
 }
@@ -343,7 +349,7 @@ async function renderAudit() {
     login: 'Anmeldung', logout: 'Abmeldung', login_failed: 'Fehlversuch', login_blocked: 'Anmeldung blockiert', login_throttled: 'Zu viele Versuche', lockout: 'Konto gesperrt',
     totp_enrolled: '2FA eingerichtet', password_changed: 'Passwort geändert', save_draft: 'Entwurf gespeichert', publish: 'Veröffentlicht', discard_draft: 'Entwurf verworfen',
     restore_version: 'Version wiederhergestellt', live_url: 'Live-URL geändert', upload: 'Bild hochgeladen', user_created: 'Konto angelegt', password_reset: 'Passwort zurückgesetzt',
-    totp_reset: '2FA zurückgesetzt', unlock: 'Entsperrt', user_disabled: 'Konto deaktiviert', user_enabled: 'Konto aktiviert',
+    totp_reset: '2FA zurückgesetzt', totp_disabled: '2FA ausgeschaltet', user_deleted: 'Konto gelöscht', role_changed: 'Rolle geändert', unlock: 'Entsperrt', user_disabled: 'Konto deaktiviert', user_enabled: 'Konto aktiviert',
     setup_admin: 'Admin-Konto angelegt',
   };
   app.replaceChildren(h('div.overview', {},
@@ -354,6 +360,124 @@ async function renderAudit() {
         h('td', {}, when(r.at)), h('td', {}, r.user_email || '–'),
         h('td', {}, h('span.pill', { class: /fail|lock|block|thrott/.test(r.action) ? 'pill-bad' : r.action === 'publish' ? 'pill-ok' : '' }, NAMES[r.action] || r.action)),
         h('td', {}, S.sites.find((s) => s.id === r.site_id)?.label || r.site_id || ''), h('td.mono', {}, r.detail || ''), h('td.mono', {}, r.ip || '')))))))));
+}
+
+// ------------------------------------------------------------------ people (admins only)
+
+const ROLE_NAMES = { admin: 'Admin', editor: 'Redaktion' };
+
+function roleSelect(value, attrs = {}) {
+  return h('select', attrs, Object.entries(ROLE_NAMES).map(([key, label]) => h('option', { value: key, selected: key === value }, label)));
+}
+
+/** Small dialog for setting someone's password (no browser prompt, the input stays masked). */
+function askPassword(name) {
+  return new Promise((resolve) => {
+    const input = h('input.input', { type: 'password', minlength: '12', required: true, autocomplete: 'new-password', id: 'reset-pw' });
+    const dialog = h('dialog.modal', { id: 'reset-dialog' },
+      h('form.modal-head', { method: 'dialog' }, h('h2', {}, `Neues Passwort für ${name}`), h('span.savebar-spacer'), h('button.btn.btn-ghost', { value: 'cancel', 'aria-label': 'Schließen' }, '✕')),
+      h('form.card-body.account-form', {
+        onsubmit: (event) => {
+          event.preventDefault();
+          resolve(input.value);
+          dialog.close();
+        },
+      },
+      h('p.card-help', {}, 'Mindestens 12 Zeichen. Die Person wird überall abgemeldet; teilen Sie ihr das Passwort auf sicherem Weg mit.'),
+      h('div.field', {}, h('label.field-label', { for: 'reset-pw' }, 'Neues Passwort'), input),
+      h('div.list-foot', {}, h('button.btn.btn-primary', { type: 'submit' }, 'Passwort setzen'))));
+    dialog.addEventListener('close', () => {
+      dialog.remove();
+      resolve(null);
+    });
+    dialog.style.width = 'min(480px, calc(100vw - 32px))';
+    document.body.append(dialog);
+    dialog.showModal();
+    input.focus();
+  });
+}
+
+async function renderUsers() {
+  const app = $('#app');
+  app.replaceChildren(h('div.overview', {}, h('div.empty-state', {}, 'lade Benutzer …')));
+  let rows;
+  try {
+    rows = await api('/admin/api/users');
+  } catch (error) {
+    app.replaceChildren(h('div.overview', {}, h('div.notice', {}, error.message)));
+    return;
+  }
+  const act = async (fn, done) => {
+    try {
+      await fn();
+      toast(done, { timeout: 8000 });
+      renderUsers();
+      return true;
+    } catch (error) {
+      toast(error.message, { kind: 'bad' });
+      return false;
+    }
+  };
+  const userUrl = (u, rest = '') => `/admin/api/users/${encodeURIComponent(u.id)}${rest}`;
+
+  const table = h('table.audit-table.users-table', {},
+    h('thead', {}, h('tr', {}, h('th', {}, 'Name'), h('th', {}, 'E-Mail'), h('th', {}, 'Rolle'), h('th', {}, '2FA'), h('th', {}, 'Letzte Anmeldung'), h('th', {}, ''))),
+    h('tbody', {}, rows.map((u) => {
+      const self = u.id === S.me.id;
+      const role = roleSelect(u.role, {
+        'aria-label': `Rolle von ${u.name}`,
+        disabled: self,
+        onchange: (e) => act(() => api(userUrl(u, '/role'), { method: 'PUT', body: { role: e.target.value } }), 'Rolle geändert.'),
+      });
+      return h('tr', {},
+        h('td', {}, u.name, self ? ' (Sie)' : ''),
+        h('td.mono', {}, u.email),
+        h('td', {}, role),
+        h('td', {}, h('span.pill', { class: u.twoFactorEnabled ? 'pill-ok' : 'pill-muted' }, u.twoFactorEnabled ? 'an' : 'aus')),
+        h('td', {}, u.lastLogin ? when(u.lastLogin) : '–'),
+        h('td', {}, h('div.row-actions', {},
+          self ? null : h('button.btn.btn-small', {
+            type: 'button',
+            onclick: async () => {
+              const next = await askPassword(u.name);
+              if (next) act(() => api(userUrl(u, '/password'), { method: 'POST', body: { password: next } }), `Neues Passwort für ${u.name} gesetzt.`);
+            },
+          }, 'Passwort setzen'),
+          !self && u.twoFactorEnabled ? h('button.btn.btn-small', {
+            type: 'button',
+            onclick: () => {
+              if (window.confirm(`2FA für ${u.name} ausschalten? Die Person meldet sich dann nur mit Passwort an und kann 2FA unter „Konto“ neu einrichten.`)) {
+                act(() => api(userUrl(u, '/2fa-reset'), { method: 'POST', body: {} }), `2FA für ${u.name} ausgeschaltet.`);
+              }
+            },
+          }, '2FA zurücksetzen') : null,
+          self ? null : h('button.btn.btn-small.btn-danger', {
+            type: 'button',
+            onclick: () => {
+              if (window.confirm(`Konto von ${u.name} (${u.email}) endgültig löschen?`)) act(() => api(userUrl(u), { method: 'DELETE' }), `Konto von ${u.name} gelöscht.`);
+            },
+          }, 'Löschen'))));
+    })));
+
+  const form = h('form.user-form', {},
+    h('div.field', {}, h('label.field-label', { for: 'nu-name' }, 'Name'), h('input.input', { id: 'nu-name', name: 'name', required: true, autocomplete: 'off', maxlength: '100' })),
+    h('div.field', {}, h('label.field-label', { for: 'nu-email' }, 'E-Mail'), h('input.input', { id: 'nu-email', name: 'email', type: 'email', required: true, autocomplete: 'off' })),
+    h('div.field', {}, h('label.field-label', { for: 'nu-password' }, 'Start-Passwort (mind. 12 Zeichen)'), h('input.input', { id: 'nu-password', name: 'password', type: 'password', required: true, minlength: '12', autocomplete: 'new-password' })),
+    h('div.field', {}, h('label.field-label', { for: 'nu-role' }, 'Rolle'), roleSelect('editor', { id: 'nu-role', name: 'role', class: 'input' })),
+    h('div.field', {}, h('button.btn.btn-primary', { type: 'submit' }, 'Konto anlegen')));
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const fd = new FormData(form);
+    act(() => api('/admin/api/users', { method: 'POST', body: Object.fromEntries(fd) }), `Konto für ${fd.get('email')} angelegt. Die Person kann sich jetzt anmelden.`);
+  });
+
+  app.replaceChildren(h('div.overview', {},
+    h('div.overview-head', {}, h('div', {}, h('h1', {}, 'Benutzer'),
+      h('p', {}, '„Redaktion“ bearbeitet und veröffentlicht Inhalte. „Admin“ verwaltet zusätzlich die Benutzer und sieht das Protokoll.'))),
+    h('section.card', {}, h('div.card-head', {}, h('h2', {}, 'Neues Konto')),
+      h('p.card-help', {}, 'Die Person meldet sich sofort mit E-Mail und diesem Passwort an. Teilen Sie es auf sicherem Weg mit. Unter „Konto“ kann sie es ändern und die Zwei-Faktor-Anmeldung einschalten (optional).'),
+      h('div.card-body', {}, form)),
+    h('section.card', {}, h('div.card-body', {}, table))));
 }
 
 // ------------------------------------------------------------------ field rendering
@@ -1026,15 +1150,67 @@ $('#btn-logout').addEventListener('click', async () => {
   await api('/admin/api/logout', { method: 'POST', body: {} }).catch(() => {});
   location.replace('/admin/login');
 });
-$('#btn-password').addEventListener('click', () => {
+function drawTwoFactor() {
+  const on = Boolean(S.me?.twoFactorEnabled);
+  $('#tfa-state').textContent = on ? 'eingeschaltet' : 'ausgeschaltet';
+  $('#tfa-state').className = `pill ${on ? 'pill-ok' : 'pill-muted'}`;
+  $('#tfa-help').textContent = on
+    ? 'Bei jeder Anmeldung wird zusätzlich ein Code aus Ihrer Authenticator-App abgefragt.'
+    : 'Optional, aber empfohlen: Bei der Anmeldung wird zusätzlich zum Passwort ein Code aus einer Authenticator-App abgefragt.';
+  $('#tfa-action').textContent = on ? 'Ausschalten' : 'Einrichten';
+  $('#tfa-action').className = on ? 'btn btn-danger' : 'btn btn-primary';
+  $('#tfa-password-form').hidden = false;
+  $('#tfa-password-form').reset();
+  $('#tfa-enroll').hidden = true;
+}
+
+$('#btn-account').addEventListener('click', () => {
   $('#password-form').reset();
-  $('#password').showModal();
+  drawTwoFactor();
+  $('#account').showModal();
 });
+
+$('#tfa-password-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const password = $('#tfa-password').value;
+  try {
+    if (S.me.twoFactorEnabled) {
+      await api('/admin/api/me/2fa/disable', { method: 'POST', body: { password } });
+      S.me.twoFactorEnabled = false;
+      drawTwoFactor();
+      toast('Zwei-Faktor-Anmeldung ausgeschaltet.');
+      return;
+    }
+    const { qr, secret, backupCodes } = await api('/admin/api/me/2fa/start', { method: 'POST', body: { password } });
+    $('#tfa-qr').src = qr;
+    $('#tfa-secret').textContent = secret.replace(/(.{4})/g, '$1 ').trim();
+    $('#tfa-codes').textContent = backupCodes.join('\n');
+    $('#tfa-password-form').hidden = true;
+    $('#tfa-enroll').hidden = false;
+    $('#tfa-confirm-form').reset();
+    $('#tfa-code').focus();
+  } catch (error) {
+    toast(error.message, { kind: 'bad' });
+  }
+});
+
+$('#tfa-confirm-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  try {
+    await api('/admin/api/me/2fa/confirm', { method: 'POST', body: { code: $('#tfa-code').value } });
+    S.me.twoFactorEnabled = true;
+    drawTwoFactor();
+    toast('Zwei-Faktor-Anmeldung eingeschaltet. Ab der nächsten Anmeldung wird der Code abgefragt.', { timeout: 8000 });
+  } catch (error) {
+    toast(error.message, { kind: 'bad' });
+  }
+});
+
 $('#password-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   try {
     await api('/admin/api/me/password', { method: 'POST', body: { current: $('#pw-current').value, next: $('#pw-next').value } });
-    $('#password').close();
+    $('#account').close();
     toast('Passwort geändert. Andere Sitzungen wurden abgemeldet.');
   } catch (error) {
     toast(error.message, { kind: 'bad' });

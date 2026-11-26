@@ -5,7 +5,7 @@ import { getPool } from '../../lib/db';
 export const prerender = false;
 
 const user = await getAdminUser(Astro.request.headers);
-if (user?.twoFactorEnabled) return Astro.redirect('/admin', 302);
+if (user) return Astro.redirect('/admin', 302);
 const databaseMissing = !getPool();
 const secretMissing = !authConfigured();
 ---
@@ -54,7 +54,7 @@ const secretMissing = !authConfigured();
 
         <section id="step-password" hidden>
           <h1>Anmelden</h1>
-          <p>Mit E-Mail und Passwort, danach mit dem Code aus Ihrer Authenticator-App.</p>
+          <p>Mit E-Mail und Passwort. Wer die Zwei-Faktor-Anmeldung eingeschaltet hat, gibt danach den Code aus der Authenticator-App ein.</p>
           <form id="form-password" novalidate>
             <label>E-Mail <input class="input" type="email" name="email" autocomplete="username" required /></label>
             <label>Passwort <input class="input" type="password" name="password" autocomplete="current-password" required /></label>
@@ -74,25 +74,6 @@ const secretMissing = !authConfigured();
           <p><button type="button" class="btn btn-small btn-ghost" id="toggle-backup">Stattdessen einen Backup-Code verwenden</button></p>
         </section>
 
-        <section id="step-enroll" hidden>
-          <h1>Zwei-Faktor einrichten</h1>
-          <p>Einmalig: Scannen Sie den QR-Code mit einer Authenticator-App (z. B. Google Authenticator, Microsoft Authenticator, 1Password) und geben Sie den angezeigten Code ein.</p>
-          <form id="form-enroll-password" novalidate hidden>
-            <label>Passwort bestätigen <input class="input" type="password" name="password" autocomplete="current-password" required /></label>
-            <div class="login-error" role="alert" hidden></div>
-            <button class="btn btn-primary" type="submit">QR-Code anzeigen</button>
-          </form>
-          <div id="enroll-qr" hidden>
-            <div class="qr"><img id="qr" alt="QR-Code für die Authenticator-App" width="200" height="200" /><span class="secret" id="secret"></span></div>
-            <p><b>Backup-Codes</b> – sicher aufbewahren. Jeder Code ersetzt einmal den App-Code, falls das Handy fehlt:</p>
-            <pre class="backup-codes" id="backup-codes"></pre>
-            <form id="form-enroll" class="enroll-form" novalidate>
-              <label>Code aus der App <input class="input code-input" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" required /></label>
-              <div class="login-error" role="alert" hidden></div>
-              <button class="btn btn-primary" type="submit">Einrichten & anmelden</button>
-            </form>
-          </div>
-        </section>
       </div>
     </main>
     <script type="module" src="/admin/login.js"></script>

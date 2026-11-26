@@ -1,7 +1,8 @@
-/* Login for the DTF Transferprint admin: first-run setup, password, TOTP (or backup code), 2FA enrollment.
-   Sign-in and code checks go to Better Auth (/api/auth/*); setup and enrollment to /admin/api/*. */
+/* Login for the DTF Transferprint admin: first-run setup, password, then (only for accounts that switched
+   two-factor login on in "Konto") the TOTP or backup code. Sign-in and code checks go to Better Auth
+   (/api/auth/*), the first-run setup to /admin/api/setup. */
 const $ = (s) => document.querySelector(s);
-const STEPS = ['setup', 'setup-locked', 'password', 'totp', 'enroll'];
+const STEPS = ['setup', 'setup-locked', 'password', 'totp'];
 
 const AUTH_MESSAGES = {
   INVALID_EMAIL_OR_PASSWORD: 'E-Mail oder Passwort sind falsch.',
@@ -26,7 +27,6 @@ async function call(url, body) {
   return data;
 }
 
-let pendingPassword = '';
 let useBackup = false;
 
 function show(step) {
@@ -57,28 +57,10 @@ function bind(form, handler) {
   });
 }
 
-async function startEnroll(password) {
-  show('enroll');
-  if (!password) {
-    $('#form-enroll-password').hidden = false;
-    $('#form-enroll-password input').focus();
-    return;
-  }
-  const { qr, secret, backupCodes } = await call('/admin/api/enroll', { password });
-  pendingPassword = '';
-  $('#form-enroll-password').hidden = true;
-  $('#qr').src = qr;
-  $('#secret').textContent = secret.replace(/(.{4})/g, '$1 ').trim();
-  $('#backup-codes').textContent = backupCodes.join('\n');
-  $('#enroll-qr').hidden = false;
-  $('#form-enroll input').focus();
-}
-
 async function signIn(email, password) {
   const res = await call('/api/auth/sign-in/email', { email, password });
   if (res.twoFactorRedirect) return show('totp');
-  // Signed in, but the second factor is not set up yet.
-  await startEnroll(password);
+  location.replace('/admin');
 }
 
 bind('#form-setup', async (fd) => {
@@ -91,8 +73,7 @@ bind('#form-setup', async (fd) => {
 });
 
 bind('#form-password', async (fd) => {
-  pendingPassword = String(fd.get('password'));
-  await signIn(String(fd.get('email')).trim(), pendingPassword);
+  await signIn(String(fd.get('email')).trim(), String(fd.get('password')));
   $('#form-password').reset();
 });
 
@@ -111,19 +92,9 @@ $('#toggle-backup').addEventListener('click', () => {
   $('#form-totp input').focus();
 });
 
-bind('#form-enroll-password', async (fd) => {
-  await startEnroll(String(fd.get('password')));
-});
-
-bind('#form-enroll', async (fd) => {
-  await call('/api/auth/two-factor/verify-totp', { code: String(fd.get('code')).replace(/\s/g, '') });
-  location.replace('/admin');
-});
-
 call('/admin/api/auth-state')
   .then((state) => {
-    if (state.signedIn && state.twoFactorEnabled) location.replace('/admin');
-    else if (state.signedIn) startEnroll(pendingPassword).catch((error) => showError('#form-enroll-password', error.message));
+    if (state.signedIn) location.replace('/admin');
     else if (state.setupNeeded) show(state.setupAllowed ? 'setup' : 'setup-locked');
     else show('password');
   })

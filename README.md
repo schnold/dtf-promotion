@@ -5,7 +5,7 @@ Astro landing page for Selini-Shirt (https://dtf-transferprint.de), rendered on 
 ## How it fits together
 
 ```
-/admin (Better Auth: E-Mail + Passwort + Authenticator-Code)
+/admin (Better Auth: E-Mail + Passwort, optional Authenticator-Code)
    │  Entwurf speichern ─► Netlify Database (Postgres): site_content.draft
    │  Veröffentlichen   ─► neue Zeile in site_versions + CDN-Cache „cms“ leeren
    ▼
@@ -15,7 +15,7 @@ Astro landing page for Selini-Shirt (https://dtf-transferprint.de), rendered on 
 
 - `src/data/cms.json` is the **schema and the starting content**. Field names, types, labels (`_label`) and hints (`_hints`) come from it; the admin can only change values and list items, never the structure. Until the first publish, and whenever the database cannot be reached, the page renders this file.
 - `src/lib/content.ts` loads the published content; `src/components/HomePage.astro` renders it (the live page and the admin preview `/admin/preview` use the same component).
-- `src/lib/auth.ts` configures Better Auth (no public sign-up, TOTP 2FA mandatory, database-backed rate limits, audit of every login).
+- `src/lib/auth.ts` configures Better Auth (no public sign-up, optional TOTP 2FA per account, database-backed rate limits, audit of every login).
 - `src/lib/admin-store.ts` holds drafts, publishing, versions, image uploads (re-encoded to WebP, served under `/images/cms/…`), the link check and the audit log. `src/pages/admin/api/[...path].ts` is its JSON API; the editor UI is the static client in `public/admin/`.
 - Database schema: `netlify/database/migrations/`. Netlify applies new migrations automatically on every production deploy (deploy previews get their own database branch).
 
@@ -27,7 +27,7 @@ Astro landing page for Selini-Shirt (https://dtf-transferprint.de), rendered on 
    - `ADMIN_SETUP_TOKEN`: at least 16 random characters; only needed until the admin account exists.
    - Delete the old `ADMIN_USERNAME`, `ADMIN_PASSWORD` and `DATA_DIR` (former basic-auth admin, no longer used).
 3. **Deploy** (push to `main`). The migration runs before the deploy goes live.
-4. Open `https://dtf-transferprint.de/admin/login`, enter the setup token, create the admin account, then scan the QR code with an authenticator app and store the 8 backup codes. Afterwards remove `ADMIN_SETUP_TOKEN` in Netlify.
+4. Open `https://dtf-transferprint.de/admin/login`, enter the setup token and create the admin account. Afterwards remove `ADMIN_SETUP_TOKEN` in Netlify. More people: "Benutzer" tab (admins only). Two-factor login: "Konto" → Zwei-Faktor-Anmeldung (optional, per person; an admin can reset it under "Benutzer").
 
 ## Working in the admin
 

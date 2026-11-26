@@ -2,7 +2,6 @@
 import '@fontsource-variable/archivo';
 import '@fontsource-variable/syne';
 import '../styles/global.css';
-import ScrollRail from '../components/ScrollRail.astro';
 import SeliniLogo from '../components/SeliniLogo.astro';
 import { getPublishedContent } from '../lib/content';
 
@@ -27,7 +26,6 @@ Astro.response.headers.set('Cache-Control', 'no-store');
     <title>{page.seo.title}</title>
   </head>
   <body class="min-h-screen bg-ink text-paper">
-    <ScrollRail />
     <main class="container-shell flex min-h-screen flex-col justify-center py-16">
       <SeliniLogo href={SHOP.home} height={36} prefix="by" class="mb-10 self-start hover:opacity-80" />
       <p class="text-sm font-bold text-cyan">{page.content.eyebrow}</p>

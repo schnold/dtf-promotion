@@ -3,9 +3,10 @@ import { twoFactor } from 'better-auth/plugins';
 import { DatabaseUnavailableError, getPool, query } from './db';
 
 /**
- * Admin login (Better Auth). Email + password, then a mandatory authenticator-app code (TOTP).
+ * Admin login (Better Auth). Email + password; two-factor login (TOTP) is optional per account and
+ * switched on in "Konto". With it on, Better Auth creates the session only after the code.
  * There is no public sign-up: the first admin is created once on /admin/login with
- * ADMIN_SETUP_TOKEN (see README), further logins only by that account.
+ * ADMIN_SETUP_TOKEN (see README); further people are added by an admin under "Benutzer".
  *
  * Required environment on Netlify: BETTER_AUTH_SECRET (≥ 32 random characters) and NETLIFY_DB_URL
  * (set automatically by Netlify Database).
@@ -126,7 +127,7 @@ export interface AdminUser {
   twoFactorEnabled: boolean;
 }
 
-/** The signed-in user for this request, or null. `twoFactorEnabled` false = 2FA still has to be set up. */
+/** The signed-in user for this request (password and, if switched on, the 2FA code done), or null. */
 export async function getAdminUser(headers: Headers): Promise<AdminUser | null> {
   if (!getPool() || !authConfigured()) return null;
   const session = await getAuth().api.getSession({ headers });

@@ -5,7 +5,7 @@ export const prerender = false;
 
 // The editor itself is a static client (public/admin/app.js); this page only gates it.
 const user = await getAdminUser(Astro.request.headers);
-if (!user || !user.twoFactorEnabled) return Astro.redirect('/admin/login', 302);
+if (!user) return Astro.redirect('/admin/login', 302);
 ---
 
 <!doctype html>
@@ -29,7 +29,7 @@ if (!user || !user.twoFactorEnabled) return Astro.redirect('/admin/login', 302);
       <nav class="tabs" id="tabs" aria-label="Bereiche"></nav>
       <div class="top-right">
         <span class="user-chip" id="user-chip"></span>
-        <button type="button" class="btn btn-small btn-ghost" id="btn-password">Passwort</button>
+        <button type="button" class="btn btn-small btn-ghost" id="btn-account">Konto</button>
         <button type="button" class="btn btn-small" id="btn-logout">Abmelden</button>
       </div>
     </header>
@@ -80,17 +80,40 @@ if (!user || !user.twoFactorEnabled) return Astro.redirect('/admin/login', 302);
       </form>
     </dialog>
 
-    <dialog id="password" class="modal">
+    <dialog id="account" class="modal">
       <form method="dialog" class="modal-head">
-        <h2>Passwort ändern</h2>
+        <h2>Ihr Konto</h2>
         <span class="savebar-spacer"></span>
         <button class="btn btn-ghost" value="cancel" aria-label="Schließen">✕</button>
       </form>
-      <form id="password-form" class="card-body">
-        <div class="field"><label class="field-label" for="pw-current">Aktuelles Passwort</label><input class="input" id="pw-current" type="password" autocomplete="current-password" required /></div>
-        <div class="field"><label class="field-label" for="pw-next">Neues Passwort (mind. 12 Zeichen)</label><input class="input" id="pw-next" type="password" autocomplete="new-password" minlength="12" required /></div>
-        <div class="list-foot"><button type="submit" class="btn btn-primary">Passwort ändern</button></div>
-      </form>
+      <div class="card-body account-body">
+        <section class="account-section">
+          <h3>Zwei-Faktor-Anmeldung <span class="pill" id="tfa-state"></span></h3>
+          <p class="card-help" id="tfa-help"></p>
+          <form id="tfa-password-form" class="account-form">
+            <div class="field"><label class="field-label" for="tfa-password">Passwort bestätigen</label><input class="input" id="tfa-password" type="password" autocomplete="current-password" required /></div>
+            <div class="list-foot"><button type="submit" class="btn" id="tfa-action"></button></div>
+          </form>
+          <div id="tfa-enroll" hidden>
+            <p>Scannen Sie den QR-Code mit einer Authenticator-App (z. B. Google Authenticator, Microsoft Authenticator, 1Password).</p>
+            <div class="qr"><img id="tfa-qr" alt="QR-Code für die Authenticator-App" width="200" height="200" /><span class="secret" id="tfa-secret"></span></div>
+            <p><b>Backup-Codes</b> – sicher aufbewahren. Jeder Code ersetzt einmal den App-Code, falls das Handy fehlt:</p>
+            <pre class="backup-codes" id="tfa-codes"></pre>
+            <form id="tfa-confirm-form" class="account-form">
+              <div class="field"><label class="field-label" for="tfa-code">Code aus der App</label><input class="input code-input" id="tfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" required /></div>
+              <div class="list-foot"><button type="submit" class="btn btn-primary">Einschalten</button></div>
+            </form>
+          </div>
+        </section>
+        <section class="account-section">
+          <h3>Passwort ändern</h3>
+          <form id="password-form" class="account-form">
+            <div class="field"><label class="field-label" for="pw-current">Aktuelles Passwort</label><input class="input" id="pw-current" type="password" autocomplete="current-password" required /></div>
+            <div class="field"><label class="field-label" for="pw-next">Neues Passwort (mind. 12 Zeichen)</label><input class="input" id="pw-next" type="password" autocomplete="new-password" minlength="12" required /></div>
+            <div class="list-foot"><button type="submit" class="btn btn-primary">Passwort ändern</button></div>
+          </form>
+        </section>
+      </div>
     </dialog>
 
     <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
