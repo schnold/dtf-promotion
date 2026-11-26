@@ -4,6 +4,7 @@ import { fill } from '../lib/cms';
 import type { SiteView } from '../lib/site';
 import BerlinBear from './BerlinBear.astro';
 import SeliniLogo from './SeliniLogo.astro';
+import SocialIcon from './SocialIcon.astro';
 
 interface Props {
   view: SiteView;
@@ -17,7 +18,14 @@ const { footer, logo } = cms.site;
 
 const currentYear = new Date().getFullYear();
 const priceStand = fill(cms.pages.home.common.priceStand, { priceUpdated: settings.priceUpdatedLabel });
-const socialLinkColors = ['hover:text-pink', 'hover:text-blue', 'hover:text-yellow'];
+// Same set and order as the selini-shirt.de footer: WhatsApp first, then the social profiles.
+const socialLinks = [{ label: 'WhatsApp', href: COMPANY.whatsapp }, ...COMPANY.social];
+// Filled spheres like selini-shirt.de; WhatsApp in its brand green so it stands out.
+const sphere = 'inline-flex size-10 items-center justify-center rounded-full border transition-colors';
+const sphereStyle = (label: string) =>
+  label === 'WhatsApp'
+    ? 'border-[#25D366] bg-[#25D366] text-ink hover:border-[#1ebe57] hover:bg-[#1ebe57]'
+    : 'border-white/15 bg-paper text-ink/65 hover:border-yellow hover:bg-yellow hover:text-ink';
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
@@ -41,9 +49,11 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
         <a class="block break-all hover:text-cyan" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
         <a class="block hover:text-cyan" href={COMPANY.whatsapp} rel="noopener">{footer.whatsappLabel}</a>
       </address>
-      <nav class="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-sm font-bold" aria-label={footer.socialAriaLabel}>
-        {COMPANY.social.map((link, i) => (
-          <a href={link.href} rel="noopener" class={socialLinkColors[i % socialLinkColors.length]}>{link.label}</a>
+      <nav class="mt-5 flex flex-wrap gap-3" aria-label={footer.socialAriaLabel}>
+        {socialLinks.map((link) => (
+          <a href={link.href} rel="noopener" target="_blank" aria-label={link.label} title={link.label} class:list={[sphere, sphereStyle(link.label)]}>
+            <SocialIcon name={link.label} size={18} />
+          </a>
         ))}
       </nav>
     </div>

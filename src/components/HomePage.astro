@@ -6,6 +6,7 @@ import { ArrowUpRight, Boxes, Factory, FileCheck, FileImage, Flame, Hand, MapPin
 import { absoluteSiteUrl, buildSeoDescription, buildSeoTitle, type SiteView } from '../lib/site';
 import { fill } from '../lib/cms';
 import SeliniLogo from './SeliniLogo.astro';
+import SocialIcon from './SocialIcon.astro';
 import SiteFooter from './SiteFooter.astro';
 
 interface Props {
@@ -273,6 +274,7 @@ const jsonLd = JSON.stringify({
               <div class="flex flex-wrap gap-3">
                 <a href={SHOP.meterware} rel="noopener" class="btn h-14 min-h-14 rounded-none border-0 bg-pink px-7 font-bold text-white shadow-none hover:bg-yellow hover:text-ink">{page.hero.ctaLabel} <MoveRight size={19} /></a>
                 <a href="#preise" class="btn h-14 min-h-14 rounded-none border border-white/50 bg-black/20 px-6 text-white backdrop-blur-md hover:bg-white hover:text-ink">{page.hero.secondaryCtaLabel}</a>
+                <a href={COMPANY.whatsapp} rel="noopener" target="_blank" class="btn h-14 min-h-14 rounded-none border-0 bg-[#25D366] font-bold text-ink hover:bg-[#1ebe57] hover:text-ink px-6"><SocialIcon name="whatsapp" size={20} /> {page.hero.whatsappLabel}</a>
               </div>
             </div>
           </div>
@@ -591,7 +593,7 @@ const jsonLd = JSON.stringify({
               <a href={SHOP.meterware} rel="noopener" class="btn h-16 min-h-16 rounded-none border-2 border-ink bg-yellow px-8 text-base font-bold text-ink shadow-[8px_8px_0_#090a0c] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0_#090a0c]">{page.cta.ctaLabel} <ArrowUpRight size={20} /></a>
               <div class="flex gap-3">
                 <a href={SHOP.contact} rel="noopener" class="btn h-14 min-h-14 rounded-none border-2 border-white bg-transparent px-6 font-bold text-white hover:bg-white hover:text-ink">{page.cta.quoteLabel}</a>
-                <a href={COMPANY.whatsapp} rel="noopener" class="btn h-14 min-h-14 rounded-none border-2 border-white bg-transparent px-6 font-bold text-white hover:bg-white hover:text-ink">{page.cta.whatsappLabel}</a>
+                <a href={COMPANY.whatsapp} rel="noopener" target="_blank" class="btn h-14 min-h-14 rounded-none border-0 bg-[#25D366] font-bold text-ink hover:bg-[#1ebe57] hover:text-ink px-6"><SocialIcon name="whatsapp" size={20} /> {page.cta.whatsappLabel}</a>
               </div>
             </div>
           </div>

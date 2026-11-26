@@ -256,6 +256,7 @@
         "lead": "DTF Transfers aus eigener Berliner Produktion: Meterware {rollWidth} × 100 cm ab {price} € pro Meter, ab 1 Stück, 24–48 h nach Zahlungseingang produziert. Du bekommst pressfertige Hot-Peel-Transfers mit Weißunterlegung für Baumwolle, Polyester und Mischgewebe, Staffelpreise bis {lowestTierPrice} €/m.",
         "ctaLabel": "DTF Meterware bestellen",
         "secondaryCtaLabel": "Staffelpreise",
+        "whatsappLabel": "WhatsApp",
         "scrollHint": "SCROLL, UM DIE FOLIE ZU LÜFTEN",
         "materials": "Baumwolle · Polyester · Mischgewebe",
         "image": { "src": "/images/dtf-hero.webp", "alt": "Frisch produzierter, farbintensiver DTF-Transfer wird von einem schwarzen Shirt abgezogen", "width": 1983, "height": 793 }
