@@ -4,6 +4,10 @@
 
 [build.environment]
   NODE_VERSION = "22.19.0"
+  # Leftovers of the former basic-auth admin (unused since the Better Auth admin). ADMIN_USERNAME is
+  # "admin", which legitimately appears in /admin routes, so the secret scanner would fail the build.
+  # Password scanning stays on; remove this line once the three variables are deleted in Netlify.
+  SECRETS_SCAN_OMIT_KEYS = "ADMIN_USERNAME,DATA_DIR"
 
 [functions]
   node_bundler = "esbuild"
