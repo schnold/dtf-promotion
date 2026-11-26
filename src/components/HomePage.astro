@@ -263,9 +263,10 @@ const jsonLd = JSON.stringify({
           </div>
 
           <div class="max-w-[1100px]">
-            <h1 class="hero-word uppercase">
-              <span class="block text-[clamp(2.75rem,11vw,10rem)]">{page.hero.h1Line1}</span>
-              <span class="ink-outline block text-[clamp(2.75rem,11vw,10rem)]">{page.hero.h1Line2}</span>
+            <!-- Sized to the h1's own width (container units): "bestellen." is ~10.2em wide in this font, so 1/10.4 of the width always fits. -->
+            <h1 class="hero-word uppercase [container-type:inline-size]">
+              <span class="block text-[clamp(1.75rem,calc(100cqi/10.4),10rem)]">{page.hero.h1Line1}</span>
+              <span class="ink-outline block text-[clamp(1.75rem,calc(100cqi/10.4),10rem)]">{page.hero.h1Line2}</span>
               <span class="mt-5 block font-display text-base font-bold normal-case tracking-normal text-yellow sm:text-xl">{t(page.hero.subline)}</span>
             </h1>
             <div class="mt-8 grid gap-8 border-t border-white/40 pt-6 md:grid-cols-[1fr_auto] md:items-end">
