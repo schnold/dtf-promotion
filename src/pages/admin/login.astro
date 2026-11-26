@@ -1,5 +1,5 @@
 ---
-import { getAdminUser } from '../../lib/auth';
+import { authConfigured, getAdminUser } from '../../lib/auth';
 import { getPool } from '../../lib/db';
 
 export const prerender = false;
@@ -7,6 +7,7 @@ export const prerender = false;
 const user = await getAdminUser(Astro.request.headers);
 if (user?.twoFactorEnabled) return Astro.redirect('/admin', 302);
 const databaseMissing = !getPool();
+const secretMissing = !authConfigured();
 ---
 
 <!doctype html>
@@ -27,6 +28,9 @@ const databaseMissing = !getPool();
 
         {databaseMissing && (
           <div class="login-error" role="alert">Die Datenbank ist nicht verbunden. In Netlify unter „Database“ eine Datenbank anlegen und neu deployen.</div>
+        )}
+        {secretMissing && (
+          <div class="login-error" role="alert">Die Anmeldung ist noch nicht eingerichtet: In Netlify unter <b>Project configuration → Environment variables</b> die Variable <code>BETTER_AUTH_SECRET</code> (mind. 32 zufällige Zeichen) anlegen und neu deployen.</div>
         )}
 
         <section id="step-setup" hidden>

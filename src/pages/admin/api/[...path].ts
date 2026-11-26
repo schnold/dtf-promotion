@@ -5,7 +5,7 @@ import {
   audit, checkLinks, checkLive, contentState, discardDraft, HttpError, listAudit, listMedia, listVersions, MAX_UPLOAD,
   publish, restoreVersion, saveDraft, setLiveUrl, siteSummary, SITE, uploadImage,
 } from '../../../lib/admin-store';
-import { type AdminUser, getAdminUser, getAuth } from '../../../lib/auth';
+import { type AdminUser, authConfigured, AuthNotConfiguredError, getAdminUser, getAuth } from '../../../lib/auth';
 import { ValidationError } from '../../../lib/content-schema';
 import { DatabaseUnavailableError, getPool } from '../../../lib/db';
 
@@ -60,10 +60,11 @@ async function authError(res: Response): Promise<never> {
 async function handlePublic(ctx: APIContext, route: string, user: AdminUser | null): Promise<Response | null> {
   if (route === 'GET auth-state') {
     const count = await userCount();
-    return json({ setupNeeded: count === 0, setupAllowed: count === 0 && setupAllowed(), signedIn: Boolean(user), twoFactorEnabled: Boolean(user?.twoFactorEnabled), email: user?.email ?? null });
+    return json({ authReady: authConfigured(), setupNeeded: count === 0, setupAllowed: count === 0 && setupAllowed() && authConfigured(), signedIn: Boolean(user), twoFactorEnabled: Boolean(user?.twoFactorEnabled), email: user?.email ?? null });
   }
   if (route === 'POST setup') {
     checkWrite(ctx);
+    if (!authConfigured()) throw new AuthNotConfiguredError();
     const body = await readJson(ctx.request, 4096);
     const created = await createFirstAdmin(body);
     await audit('setup_admin', { ip: clientIp(ctx), detail: created.email });
@@ -192,8 +193,9 @@ export const ALL: APIRoute = async (ctx) => {
   try {
     return await handle(ctx);
   } catch (error) {
-    const status = error instanceof HttpError || error instanceof ValidationError || error instanceof DatabaseUnavailableError ? error.status : 500;
-    if (status >= 500 && !(error instanceof DatabaseUnavailableError)) console.error(error);
-    return json({ error: status >= 500 && !(error instanceof DatabaseUnavailableError) ? 'Interner Fehler' : (error as Error).message }, status);
+    const known = error instanceof DatabaseUnavailableError || error instanceof AuthNotConfiguredError;
+    const status = error instanceof HttpError || error instanceof ValidationError || known ? (error as { status: number }).status : 500;
+    if (status >= 500 && !known) console.error(error);
+    return json({ error: status >= 500 && !known ? 'Interner Fehler' : (error as Error).message }, status);
   }
 };

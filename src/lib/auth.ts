@@ -27,7 +27,20 @@ function trustedOrigins(): string[] {
   return [...new Set(list.filter((origin): origin is string => Boolean(origin?.trim())).map((origin) => new URL(origin).origin))];
 }
 
+/** Production refuses to run the login with Better Auth's built-in fallback secret. */
+export function authConfigured(): boolean {
+  return DEV || (process.env.BETTER_AUTH_SECRET?.trim().length ?? 0) >= 32;
+}
+
+export class AuthNotConfiguredError extends Error {
+  status = 503;
+  constructor() {
+    super('Die Anmeldung ist noch nicht eingerichtet: BETTER_AUTH_SECRET (mind. 32 Zeichen) fehlt in Netlify.');
+  }
+}
+
 function createAuth() {
+  if (!authConfigured()) throw new AuthNotConfiguredError();
   const database = getPool();
   if (!database) throw new DatabaseUnavailableError();
   return betterAuth({
@@ -115,7 +128,7 @@ export interface AdminUser {
 
 /** The signed-in user for this request, or null. `twoFactorEnabled` false = 2FA still has to be set up. */
 export async function getAdminUser(headers: Headers): Promise<AdminUser | null> {
-  if (!getPool()) return null;
+  if (!getPool() || !authConfigured()) return null;
   const session = await getAuth().api.getSession({ headers });
   if (!session) return null;
   const user = session.user as typeof session.user & { role?: string | null; twoFactorEnabled?: boolean | null };
