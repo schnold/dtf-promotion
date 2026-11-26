@@ -390,3 +390,47 @@ details[open] .faq-plus { transform: rotate(45deg); }
   .legal-prose > section { break-inside: avoid-page; }
   .legal-note { box-shadow: none; background: #fff; }
 }
+
+/* Footer social spheres, comic / screen-print style: hand-painted shape, ink outline,
+   halftone dots and a misregistered second colour layer behind the sphere. */
+.print-sphere {
+  --sphere-bg: var(--paper);
+  --sphere-offset: var(--pink);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid var(--ink);
+  border-radius: 54% 46% 51% 49% / 47% 53% 48% 52%;
+  background: var(--sphere-bg);
+  color: var(--ink);
+  box-shadow: 0 0 0 2px var(--paper), 4px 4px 0 2px var(--sphere-offset);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.print-sphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-image: radial-gradient(rgb(9 10 12 / .22) 1px, transparent 1.3px);
+  background-size: 5px 5px;
+  -webkit-mask-image: linear-gradient(135deg, transparent 35%, #000 100%);
+  mask-image: linear-gradient(135deg, transparent 35%, #000 100%);
+}
+.print-sphere svg { filter: drop-shadow(1px 1px 0 rgb(244 244 239 / .55)); }
+.print-sphere:nth-child(2n) { border-radius: 48% 52% 46% 54% / 53% 47% 52% 48%; }
+.print-sphere:hover,
+.print-sphere:focus-visible {
+  transform: translate(-2px, -2px) rotate(-4deg);
+  box-shadow: 0 0 0 2px var(--paper), 7px 7px 0 2px var(--sphere-offset);
+}
+.print-sphere:active { transform: translate(2px, 2px); box-shadow: 0 0 0 2px var(--paper), 1px 1px 0 2px var(--sphere-offset); }
+.print-sphere--whatsapp { --sphere-bg: #25d366; --sphere-offset: var(--yellow); }
+.print-sphere--instagram { --sphere-bg: var(--pink); --sphere-offset: var(--cyan); }
+.print-sphere--facebook { --sphere-bg: var(--cyan); --sphere-offset: var(--blue); }
+.print-sphere--youtube { --sphere-bg: var(--yellow); --sphere-offset: var(--pink); }
+@media (prefers-reduced-motion: reduce) { .print-sphere { transition: none; } }
