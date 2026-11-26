@@ -1,0 +1,136 @@
+---
+import LegalPage from '../components/LegalPage.astro';
+import { getPublishedContent, publicCacheHeaders } from '../lib/content';
+import { LEGAL_ENTITY } from '../lib/legal';
+
+export const prerender = false;
+
+const content = await getPublishedContent();
+publicCacheHeaders(Astro.response.headers, content);
+const { COMPANY, SHOP } = content.view;
+
+const toc = [
+  { id: 'anbieter', label: 'Anbieter' },
+  { id: 'kontakt', label: 'Kontakt' },
+  { id: 'register', label: 'Register und Umsatzsteuer' },
+  { id: 'redaktion', label: 'Redaktionell verantwortlich' },
+  { id: 'angebot', label: 'Hinweis zum Angebot' },
+  { id: 'streitbeilegung', label: 'Verbraucherstreitbeilegung' },
+  { id: 'haftung-inhalte', label: 'Haftung für Inhalte' },
+  { id: 'haftung-links', label: 'Haftung für Links' },
+  { id: 'urheberrecht', label: 'Urheberrecht' },
+];
+---
+
+<LegalPage
+  view={content.view}
+  path="/impressum"
+  title="Impressum"
+  titleHtml='Im<span class="ink-outline">pressum</span>'
+  description={`Impressum von ${LEGAL_ENTITY.domain}: Anbieter ${LEGAL_ENTITY.name}, ${COMPANY.street}, ${COMPANY.postalCode} ${COMPANY.city}.`}
+  lead={`${LEGAL_ENTITY.domain} ist ein Angebot der ${LEGAL_ENTITY.name}, die auch den Shop selini-shirt.de betreibt.`}
+  toc={toc}
+>
+  <section id="anbieter">
+    <h2>Anbieter</h2>
+    <p>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG):</p>
+    <dl class="legal-facts">
+      <div><dt>Unternehmen</dt><dd>{LEGAL_ENTITY.name}</dd></div>
+      <div><dt>Anschrift</dt><dd><address>{COMPANY.street}<br />{COMPANY.postalCode} {COMPANY.city}<br />{LEGAL_ENTITY.country}</address></dd></div>
+      <div><dt>Vertreten durch</dt><dd>Geschäftsführer {LEGAL_ENTITY.managingDirector}</dd></div>
+      <div><dt>Marken</dt><dd>Selini-Shirt, BySelini</dd></div>
+    </dl>
+  </section>
+
+  <section id="kontakt">
+    <h2>Kontakt</h2>
+    <dl class="legal-facts">
+      <div><dt>Telefon</dt><dd><a href={COMPANY.phoneHref}>{COMPANY.phoneDisplay}</a></dd></div>
+      <div><dt>E-Mail</dt><dd><a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a></dd></div>
+      <div><dt>Kontaktseite</dt><dd><a href={SHOP.contact} rel="noopener">selini-shirt.de/kontakt</a></dd></div>
+    </dl>
+  </section>
+
+  <section id="register">
+    <h2>Register und Umsatzsteuer</h2>
+    <dl class="legal-facts">
+      <div><dt>Registergericht</dt><dd>{LEGAL_ENTITY.registerCourt}</dd></div>
+      <div><dt>Registernummer</dt><dd>{LEGAL_ENTITY.registerNumber}</dd></div>
+      <div><dt>USt-IdNr.</dt><dd>{LEGAL_ENTITY.vatId}<br /><span class="font-normal">Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz</span></dd></div>
+    </dl>
+  </section>
+
+  <section id="redaktion">
+    <h2>Redaktionell verantwortlich</h2>
+    <p>Verantwortlich für journalistisch-redaktionell gestaltete Inhalte gemäß § 18 Abs. 2 Medienstaatsvertrag (MStV):</p>
+    <p>
+      {LEGAL_ENTITY.managingDirector}<br />
+      {LEGAL_ENTITY.name}<br />
+      {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}
+    </p>
+  </section>
+
+  <section id="angebot">
+    <h2>Hinweis zum Angebot</h2>
+    <p>
+      Diese Website informiert über DTF Transfers. Sie können hier nichts bestellen und es kommt über diese Website kein Vertrag zustande. Bestellungen
+      nimmt ausschließlich der Shop <a href={SHOP.home} rel="noopener">selini-shirt.de</a> entgegen; dort gelten dessen Preise, Vertragsbedingungen und
+      rechtliche Hinweise. Einzelheiten stehen in den <a href="/nutzungsbedingungen">Nutzungsbedingungen</a>.
+    </p>
+  </section>
+
+  <section id="streitbeilegung">
+    <h2>Verbraucherstreitbeilegung</h2>
+    <p>
+      Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen (§ 36
+      Verbraucherstreitbeilegungsgesetz).
+    </p>
+    <p>Bei Fragen oder Beanstandungen erreichen Sie uns direkt unter den oben genannten Kontaktdaten. Wir bemühen uns um eine schnelle Lösung.</p>
+  </section>
+
+  <section id="haftung-inhalte">
+    <h2>Haftung für Inhalte</h2>
+    <p>
+      Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach den §§ 8
+      bis 10 DDG sind wir jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen,
+      die auf eine rechtswidrige Tätigkeit hinweisen.
+    </p>
+    <p>
+      Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine Haftung
+      ist insoweit erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Sobald uns entsprechende Rechtsverletzungen bekannt
+      werden, entfernen wir diese Inhalte umgehend.
+    </p>
+    <p>
+      Wir erstellen die Inhalte dieser Website mit Sorgfalt und halten sie aktuell. Preise, Lieferzeiten und technische Angaben können sich dennoch
+      ändern; verbindlich sind die Angaben im Shop zum Zeitpunkt Ihrer Bestellung.
+    </p>
+  </section>
+
+  <section id="haftung-links">
+    <h2>Haftung für Links</h2>
+    <p>
+      Diese Website enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für diese fremden Inhalte ist stets der
+      jeweilige Anbieter oder Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung haben wir die verlinkten Seiten auf mögliche Rechtsverstöße geprüft;
+      rechtswidrige Inhalte waren nicht erkennbar.
+    </p>
+    <p>
+      Eine dauerhafte inhaltliche Kontrolle der verlinkten Seiten ist ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Sobald uns
+      Rechtsverletzungen bekannt werden, entfernen wir solche Links umgehend.
+    </p>
+  </section>
+
+  <section id="urheberrecht">
+    <h2>Urheberrecht</h2>
+    <p>
+      Die von uns erstellten Inhalte und Werke auf dieser Website, insbesondere Texte, Fotos, Grafiken und das Layout, unterliegen dem deutschen
+      Urheberrecht. Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen unserer
+      vorherigen Zustimmung in Textform. Downloads und Kopien dieser Seiten sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.
+    </p>
+    <p>
+      Soweit Inhalte nicht von uns erstellt wurden, beachten wir die Urheberrechte Dritter und kennzeichnen solche Inhalte. Sollten Sie dennoch auf eine
+      Urheberrechtsverletzung aufmerksam werden, bitten wir um einen Hinweis an{' '}
+      <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>. Wir entfernen betroffene Inhalte dann umgehend.
+    </p>
+    <p>Die genannten Marken und Logos sind Eigentum ihrer jeweiligen Inhaber.</p>
+  </section>
+</LegalPage>

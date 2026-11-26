@@ -140,17 +140,6 @@
       "tshirtLogo": "https://selini-shirt.de/product/t-shirts-firmenlogo-bedrucken-besticken-berlin",
       "hoodieLogo": "https://selini-shirt.de/product/hoodie-individuell-bedrucken-besticken"
     },
-    "legal": {
-      "_label": "Rechtliche Links",
-      "_help": "Links in der Fußzeile unter „Rechtliches“.",
-      "items": [
-        { "label": "Impressum", "href": "https://selini-shirt.de/rechtliches/impressum" },
-        { "label": "Datenschutz", "href": "https://selini-shirt.de/rechtliches/datenschutz" },
-        { "label": "AGB", "href": "https://selini-shirt.de/rechtliches/agb" },
-        { "label": "Nutzungsbedingungen", "href": "https://selini-shirt.de/rechtliches/nutzungsbedingungen" },
-        { "label": "Cookie-Richtlinie", "href": "https://selini-shirt.de/rechtliches/cookies" }
-      ]
-    },
     "pricing": {
       "_label": "Preise & Staffeln",
       "_help": "Alle Zahlen des Preisrechners und der Staffeltabelle. Staffelmengen aufsteigend, Meterpreise dürfen nicht steigen. Nach „Veröffentlichen“ sofort online.",

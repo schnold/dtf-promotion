@@ -1,0 +1,115 @@
+---
+import '@fontsource-variable/archivo';
+import '@fontsource-variable/syne';
+import '../styles/global.css';
+import { ArrowUpRight, MoveLeft } from '@lucide/astro';
+import { LEGAL_PAGES, LEGAL_UPDATED } from '../lib/legal';
+import { absoluteSiteUrl, type SiteView } from '../lib/site';
+import SeliniLogo from './SeliniLogo.astro';
+import SiteFooter from './SiteFooter.astro';
+
+interface Props {
+  view: SiteView;
+  /** Route of the page, e.g. `/impressum`. */
+  path: string;
+  /** Plain title for <title> and the tab bar. */
+  title: string;
+  /** Headline; may mark one part with `<span class="ink-outline">`. */
+  titleHtml: string;
+  description: string;
+  /** One or two sentences under the headline. */
+  lead: string;
+  /** Sections of the page in order; `id` must match the `<section id>` in the slot. */
+  toc: Array<{ id: string; label: string }>;
+}
+
+const { view, path, title, titleHtml, description, lead, toc } = Astro.props;
+const { cms, SHOP, SITE_NAME } = view;
+const { header, logo } = cms.site;
+const canonicalUrl = absoluteSiteUrl(Astro.request, path, cms);
+// Header links of the landing page are anchors (#preise); from here they lead back to it.
+const navLinks = header.links.map((link) => ({ ...link, href: link.href.startsWith('#') ? `/${link.href}` : link.href }));
+const headerLinkColors = ['hover:text-yellow', 'hover:text-cyan', 'hover:text-pink'];
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex,follow" />
+    <meta name="theme-color" content="#090a0c" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={`${title} | ${SITE_NAME}`} />
+    <meta property="og:url" content={canonicalUrl} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <title>{`${title} | ${SITE_NAME}`}</title>
+  </head>
+  <body class="legal-page">
+    <a class="skip-link" href="#main-content">{cms.site.skipLink}</a>
+    <div class="rainbow-line fixed inset-x-0 top-0 z-[70] h-1"></div>
+
+    <header class="legal-chrome border-b border-white/15 bg-ink">
+      <nav class="container-shell flex items-center justify-between py-5" aria-label={header.ariaLabel}>
+        <div class="flex items-center gap-3 sm:gap-4">
+          <a href="/" class="font-display text-lg font-extrabold tracking-[-.06em] sm:text-2xl">{logo.first}<span class="text-yellow">/</span><span class="hidden min-[390px]:inline">{logo.second}</span><span class="min-[390px]:hidden">{logo.secondShort}</span></a>
+          <span class="h-7 w-px bg-white/25" aria-hidden="true"></span>
+          <SeliniLogo href={SHOP.home} height={34} prefix="by" class="[&>span]:hidden sm:[&>span]:inline [&>img]:h-[26px] [&>img]:w-auto sm:[&>img]:h-[34px] hover:opacity-80" />
+        </div>
+        <div class="hidden items-center gap-8 text-sm font-semibold lg:flex">
+          {navLinks.map((link, i) => (
+            <a href={link.href} class={headerLinkColors[i % headerLinkColors.length]}>{link.label}</a>
+          ))}
+        </div>
+        <a href={SHOP.meterware} rel="noopener" class="btn h-11 min-h-11 rounded-none border-0 bg-yellow px-5 text-sm font-bold text-ink shadow-none hover:bg-white">
+          <span class="hidden sm:inline">{header.ctaPrefix} </span>{header.ctaLabel} <ArrowUpRight size={17} stroke-width={2.5} />
+        </a>
+      </nav>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+      <section class="legal-hero border-b border-white/20 bg-ink pb-0 pt-12 sm:pt-20">
+        <div class="container-shell">
+          <a href="/" class="legal-chrome inline-flex items-center gap-2 text-sm font-bold text-white/60 hover:text-cyan"><MoveLeft size={16} aria-hidden="true" /> Zur Startseite</a>
+          <p class="mt-8 text-sm font-bold text-cyan">Rechtliches</p>
+          <h1 class="legal-title font-display mt-4 font-extrabold" set:html={titleHtml} />
+          <p class="mt-7 max-w-2xl text-lg leading-relaxed text-white/70">{lead}</p>
+          <p class="mt-5 text-sm font-semibold text-white/45">Stand: <time datetime={LEGAL_UPDATED.iso}>{LEGAL_UPDATED.label}</time></p>
+
+          <nav class="legal-tabs legal-chrome mt-12" aria-label="Rechtliche Seiten">
+            {LEGAL_PAGES.map((item) => (
+              <a href={item.href} aria-current={item.href === path ? 'page' : undefined}>{item.label}</a>
+            ))}
+          </nav>
+        </div>
+      </section>
+
+      <section class="legal-body bg-paper py-14 text-ink sm:py-20">
+        <div class="container-shell grid gap-12 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-16 xl:gap-24">
+          <aside class="legal-chrome">
+            <nav class="legal-toc" aria-label="Inhalt dieser Seite">
+              <p class="legal-toc-title">Inhalt</p>
+              <ol>
+                {toc.map((item) => (
+                  <li><a href={`#${item.id}`}>{item.label}</a></li>
+                ))}
+              </ol>
+            </nav>
+          </aside>
+          <article class="legal-prose">
+            <slot />
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <SiteFooter view={view} />
+  </body>
+</html>

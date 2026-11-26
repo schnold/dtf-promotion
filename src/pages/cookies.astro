@@ -1,0 +1,120 @@
+---
+import LegalPage from '../components/LegalPage.astro';
+import { getPublishedContent, publicCacheHeaders } from '../lib/content';
+import { LEGAL_ENTITY } from '../lib/legal';
+
+export const prerender = false;
+
+const content = await getPublishedContent();
+publicCacheHeaders(Astro.response.headers, content);
+const { COMPANY, SHOP } = content.view;
+
+const toc = [
+  { id: 'besucher', label: 'Cookies für Besucher' },
+  { id: 'kein-banner', label: 'Warum es kein Cookie-Banner gibt' },
+  { id: 'verwaltung', label: 'Geschützter Verwaltungsbereich' },
+  { id: 'shop', label: 'Cookies im Shop' },
+  { id: 'browser', label: 'Cookies im Browser verwalten' },
+  { id: 'kontakt', label: 'Kontakt' },
+];
+---
+
+<LegalPage
+  view={content.view}
+  path="/cookies"
+  title="Cookie-Richtlinie"
+  titleHtml='Cookie-<wbr /><span class="ink-outline">Richtlinie</span>'
+  description={`Cookie-Richtlinie von ${LEGAL_ENTITY.domain}: Für Besucher werden keine Cookies gesetzt, es gibt kein Tracking und daher kein Cookie-Banner.`}
+  lead="Diese Website kommt für Besucher ohne Cookies aus. Hier steht, was das genau heißt und wo doch welche vorkommen."
+  toc={toc}
+>
+  <div class="legal-note">
+    <p class="legal-note-title">Kurz gesagt</p>
+    <ul>
+      <li>Besucher dieser Website erhalten keine Cookies.</li>
+      <li>Es gibt keine Analyse-, Werbe- oder Social-Media-Cookies.</li>
+      <li>Cookies entstehen nur, wenn sich unsere Mitarbeiter im geschützten Verwaltungsbereich anmelden.</li>
+    </ul>
+  </div>
+
+  <section id="besucher">
+    <h2>Cookies für Besucher</h2>
+    <p>
+      Cookies sind kleine Textdateien, die eine Website im Browser ablegt, um ihn später wiederzuerkennen. Vergleichbare Techniken sind Local Storage
+      und Session Storage.
+    </p>
+    <p>
+      Auf den öffentlichen Seiten von {LEGAL_ENTITY.domain} verwenden wir <strong>keine dieser Techniken</strong>. Wir setzen keine Cookies, speichern
+      nichts in Ihrem Browser und lesen dort nichts aus. Es gibt keine Analyse-Cookies (zum Beispiel Google Analytics), keine Werbe-Cookies und keine
+      Cookies von Drittanbietern, weil die Seiten keine Inhalte von fremden Servern laden.
+    </p>
+  </section>
+
+  <section id="kein-banner">
+    <h2>Warum es kein Cookie-Banner gibt</h2>
+    <p>
+      Eine Einwilligung ist nach § 25 Abs. 1 des Telekommunikation-Digitale-Dienste-Datenschutz-Gesetzes (TDDDG) nur nötig, wenn eine Website
+      Informationen auf Ihrem Gerät speichert oder von dort ausliest und das nicht unbedingt erforderlich ist. Da diese Website für Besucher gar nichts
+      speichert oder ausliest, gibt es nichts, wozu wir Ihre Einwilligung einholen müssten.
+    </p>
+  </section>
+
+  <section id="verwaltung">
+    <h2>Geschützter Verwaltungsbereich</h2>
+    <p>
+      Unsere Mitarbeiter pflegen die Inhalte dieser Website in einem passwortgeschützten Bereich mit Zwei-Faktor-Anmeldung. Nur dort und nur nach einer
+      Anmeldung werden Cookies gesetzt. Als Besucher kommen Sie mit diesem Bereich nicht in Berührung.
+    </p>
+    <div class="legal-table-wrap">
+      <table class="legal-table">
+        <thead>
+          <tr><th scope="col">Cookie</th><th scope="col">Zweck</th><th scope="col">Speicherdauer</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>dtf-admin.session_token</code></td>
+            <td>Hält die Anmeldung im Verwaltungsbereich aufrecht</td>
+            <td>höchstens 12 Stunden</td>
+          </tr>
+          <tr>
+            <td>weitere Cookies mit dem Präfix <code>dtf-admin.</code></td>
+            <td>Absicherung der Anmeldung, etwa für den zweiten Faktor</td>
+            <td>nur während der Anmeldung bzw. der Sitzung</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Diese Cookies sind für die Anmeldung unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG) und werden nur verschlüsselt übertragen. Bei jeder Anmeldung
+      protokollieren wir außerdem Zeitpunkt, IP-Adresse und Browserkennung des Mitarbeiters, um den Zugang abzusichern und Missbrauch nachvollziehen zu
+      können (Art. 6 Abs. 1 lit. f DSGVO).
+    </p>
+  </section>
+
+  <section id="shop">
+    <h2>Cookies im Shop</h2>
+    <p>
+      Wenn Sie über einen Link zu <a href={SHOP.home} rel="noopener">selini-shirt.de</a> wechseln, gelten die Cookie-Einstellungen des Shops. Dort
+      werden unter anderem Cookies für den Warenkorb und die Anmeldung verwendet; über weitere Cookies entscheiden Sie im Cookie-Banner des Shops.
+      Einzelheiten stehen in der <a href="https://selini-shirt.de/rechtliches/cookies" rel="noopener">Cookie-Richtlinie von selini-shirt.de</a>.
+    </p>
+  </section>
+
+  <section id="browser">
+    <h2>Cookies im Browser verwalten</h2>
+    <p>
+      Unabhängig von dieser Website können Sie in jedem Browser einstellen, ob Cookies angenommen, beim Schließen gelöscht oder ganz blockiert werden.
+      Sie finden die Einstellungen in der Regel unter „Datenschutz“ oder „Datenschutz und Sicherheit“. Diese Website funktioniert auch dann
+      vollständig, wenn Sie Cookies komplett blockieren.
+    </p>
+  </section>
+
+  <section id="kontakt">
+    <h2>Kontakt</h2>
+    <p>
+      Fragen zu dieser Richtlinie beantworten wir gern: {LEGAL_ENTITY.name}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}, E-Mail{' '}
+      <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>. Alle weiteren Angaben zur Datenverarbeitung stehen in der{' '}
+      <a href="/datenschutz">Datenschutzerklärung</a>.
+    </p>
+  </section>
+</LegalPage>

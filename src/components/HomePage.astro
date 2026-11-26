@@ -2,11 +2,11 @@
 import '@fontsource-variable/archivo';
 import '@fontsource-variable/syne';
 import '../styles/global.css';
-import { ArrowUpRight, Boxes, Factory, FileCheck, FileImage, Flame, Hand, MapPin, MoveRight, Palette, Ruler, Shirt, Star, Store, Thermometer, Timer, Upload, Users, WashingMachine } from '@lucide/astro';
+import { ArrowUpRight, Boxes, Factory, FileCheck, FileImage, Flame, Hand, MapPin, MoveRight, Palette, Ruler, Shirt, Store, Thermometer, Timer, Upload, Users, WashingMachine } from '@lucide/astro';
 import { absoluteSiteUrl, buildSeoDescription, buildSeoTitle, type SiteView } from '../lib/site';
 import { fill } from '../lib/cms';
-import BerlinBear from './BerlinBear.astro';
 import SeliniLogo from './SeliniLogo.astro';
+import SiteFooter from './SiteFooter.astro';
 
 interface Props {
   /** Published content (live page) or the draft (admin preview). */
@@ -16,11 +16,10 @@ interface Props {
 }
 
 const { view, preview = false } = Astro.props;
-const { cms, settings, COMPANY, LEGAL_LINKS, SHOP, SITE_NAME } = view;
+const { cms, settings, COMPANY, SHOP, SITE_NAME } = view;
 const page = cms.pages.home;
-const { header, footer, logo } = cms.site;
+const { header, logo } = cms.site;
 
-const currentYear = new Date().getFullYear();
 const canonicalUrl = absoluteSiteUrl(Astro.request, '/', cms);
 const ogImage = page.seo.ogImage;
 const socialImageUrl = absoluteSiteUrl(Astro.request, ogImage.src, cms);
@@ -80,7 +79,6 @@ const facts = page.facts.items.map((fact) => [t(fact.value), t(fact.label)]);
 const tickerColors = ['text-pink', 'text-blue'];
 const tickerItems = page.ticker.items.map((label, i) => [t(label), tickerColors[i % tickerColors.length]]);
 const headerLinkColors = ['hover:text-yellow', 'hover:text-cyan', 'hover:text-pink'];
-const socialLinkColors = ['hover:text-pink', 'hover:text-blue', 'hover:text-yellow'];
 
 const pressSteps = page.pressing.steps.map((step, i) => [iconFor(step.icon), String(i + 1), t(step.title), t(step.text)] as const);
 
@@ -601,54 +599,7 @@ const jsonLd = JSON.stringify({
       </section>
     </main>
 
-    <footer class="border-t border-white/20 bg-ink py-12 text-white sm:py-16">
-      <div class="container-shell grid gap-12 border-b border-white/20 pb-12 md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr]">
-        <div>
-          <a href="#top" class="font-display text-2xl font-extrabold tracking-[-.06em]">{logo.first}<span class="text-yellow">/</span>{logo.second}</a>
-          <div class="mt-5 flex items-center gap-3">
-            <span class="text-xs font-bold uppercase tracking-[.14em] text-white/45">Ein Angebot von</span>
-            <SeliniLogo href={SHOP.home} height={40} class="hover:opacity-80" />
-          </div>
-          <p class="mt-5 max-w-sm text-sm leading-relaxed text-white/55">{footer.text}</p>
-          <a href={COMPANY.googleRatingUrl} rel="noopener" class="mt-5 inline-flex items-center gap-2 text-sm font-bold hover:text-yellow"><Star size={16} class="text-yellow" /> {fill(footer.ratingLabel, { rating: COMPANY.googleRating })}</a>
-          <a href={SHOP.meterware} rel="noopener" class="mt-4 flex items-center gap-2 font-bold text-yellow hover:text-white">{footer.shopCtaLabel} <ArrowUpRight size={16} /></a>
-        </div>
-        <div>
-          <h2 class="text-sm font-bold text-white/45">{footer.contactTitle}</h2>
-          <address class="mt-4 space-y-2 text-sm not-italic leading-relaxed">
-            <p>{COMPANY.legalName}<br/>{COMPANY.street}<br/>{COMPANY.postalCode} {COMPANY.city} ({COMPANY.district})</p>
-            <a class="block hover:text-cyan" href={COMPANY.phoneHref}>{COMPANY.phoneDisplay}</a>
-            <a class="block break-all hover:text-cyan" href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
-            <a class="block hover:text-cyan" href={COMPANY.whatsapp} rel="noopener">{footer.whatsappLabel}</a>
-          </address>
-          <nav class="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-sm font-bold" aria-label={footer.socialAriaLabel}>
-            {COMPANY.social.map((link, i) => (
-              <a href={link.href} rel="noopener" class={socialLinkColors[i % socialLinkColors.length]}>{link.label}</a>
-            ))}
-          </nav>
-        </div>
-        <div>
-          <h2 class="text-sm font-bold text-white/45">{footer.shopNavTitle}</h2>
-          <nav class="mt-4 flex flex-col items-start gap-3 text-sm" aria-label={footer.shopNavAriaLabel}>
-            {footer.shopLinks.map((link) => (
-              <a href={link.href} rel="noopener" class="hover:text-cyan">{link.label}</a>
-            ))}
-          </nav>
-        </div>
-        <div>
-          <h2 class="text-sm font-bold text-white/45">{footer.legalNavTitle}</h2>
-          <nav class="mt-4 flex flex-col items-start gap-3 text-sm" aria-label={footer.legalNavAriaLabel}>
-            {LEGAL_LINKS.map((link) => (
-              <a href={link.href} rel="noopener" class="hover:text-cyan">{link.label}</a>
-            ))}
-          </nav>
-        </div>
-      </div>
-      <div class="container-shell flex flex-col gap-3 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
-        <p>{fill(footer.copyright, { year: currentYear, legalName: COMPANY.legalName, priceStand })}</p>
-        <p class="flex items-center gap-2">{footer.madeIn} <BerlinBear class="h-5 w-auto text-paper/80" /></p>
-      </div>
-    </footer>
+    <SiteFooter view={view} homeHref="#top" />
 
     <script is:inline nonce={Astro.locals.cspNonce}>
       const tabs = [...document.querySelectorAll('.price-tab')];

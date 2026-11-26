@@ -1,0 +1,184 @@
+---
+import LegalPage from '../components/LegalPage.astro';
+import { getPublishedContent, publicCacheHeaders } from '../lib/content';
+import { LEGAL_ENTITY, SHOP_TERMS_URL } from '../lib/legal';
+
+export const prerender = false;
+
+const content = await getPublishedContent();
+publicCacheHeaders(Astro.response.headers, content);
+const { COMPANY, SHOP } = content.view;
+
+const toc = [
+  { id: 'geltungsbereich', label: 'Geltungsbereich und Anbieter' },
+  { id: 'information', label: 'Reines Informationsangebot' },
+  { id: 'preise', label: 'Preise und Preisrechner' },
+  { id: 'bestellung', label: 'Bestellungen im Shop' },
+  { id: 'technische-angaben', label: 'Technische Angaben' },
+  { id: 'nutzung', label: 'Zulässige Nutzung' },
+  { id: 'geistiges-eigentum', label: 'Geistiges Eigentum' },
+  { id: 'externe-links', label: 'Externe Links' },
+  { id: 'verfuegbarkeit', label: 'Verfügbarkeit' },
+  { id: 'haftung', label: 'Haftung' },
+  { id: 'datenschutz', label: 'Datenschutz' },
+  { id: 'schluss', label: 'Schlussbestimmungen' },
+];
+---
+
+<LegalPage
+  view={content.view}
+  path="/nutzungsbedingungen"
+  title="Nutzungsbedingungen"
+  titleHtml='Nutzungs<wbr /><span class="ink-outline">bedingungen</span>'
+  description={`Nutzungsbedingungen von ${LEGAL_ENTITY.domain}: reines Informationsangebot der ${LEGAL_ENTITY.name}. Bestellungen laufen über selini-shirt.de.`}
+  lead="Diese Website informiert über DTF Transfers und führt zum Shop. Die Bedingungen regeln, wie Sie sie nutzen können und was für Preise, Angaben und Bestellungen gilt."
+  toc={toc}
+>
+  <div class="legal-note">
+    <p class="legal-note-title">Kurz gesagt</p>
+    <ul>
+      <li>Diese Website ist ein Informationsangebot. Hier kommt kein Vertrag zustande.</li>
+      <li>Preise und Ergebnisse des Preisrechners sind unverbindliche Richtwerte. Verbindlich ist der Shop.</li>
+      <li>Bestellt wird auf selini-shirt.de zu den dortigen Bedingungen.</li>
+    </ul>
+  </div>
+
+  <section id="geltungsbereich">
+    <h2>Geltungsbereich und Anbieter</h2>
+    <p>
+      Diese Nutzungsbedingungen gelten für die Nutzung der Website {LEGAL_ENTITY.domain} einschließlich aller Unterseiten. Anbieter ist die{' '}
+      {LEGAL_ENTITY.name}, {COMPANY.street}, {COMPANY.postalCode} {COMPANY.city}, vertreten durch den Geschäftsführer{' '}
+      {LEGAL_ENTITY.managingDirector}. Alle Anbieterangaben stehen im <a href="/impressum">Impressum</a>.
+    </p>
+    <p>Mit dem Aufruf der Website nutzen Sie sie zu diesen Bedingungen. Die Nutzung ist kostenlos und ohne Registrierung möglich.</p>
+  </section>
+
+  <section id="information">
+    <h2>Reines Informationsangebot</h2>
+    <p>
+      Die Website informiert über DTF Transfers, ihre Verarbeitung, Dateianforderungen und Preise. Die Inhalte sind keine verbindlichen Angebote im
+      Rechtssinn. Über diese Website können Sie nichts bestellen, keine Dateien hochladen und kein Kundenkonto anlegen; ein Vertrag kommt hier nicht
+      zustande.
+    </p>
+  </section>
+
+  <section id="preise">
+    <h2>Preise und Preisrechner</h2>
+    <p>
+      Die auf dieser Website genannten Preise, Staffeln, Bundles und Lieferzeiten geben den Stand wieder, der jeweils bei der Angabe vermerkt ist. Sie
+      können sich ändern und dienen der Orientierung.
+    </p>
+    <p>
+      Der Preisrechner liefert eine unverbindliche Schätzung auf Grundlage der gewählten Größe und Stückzahl. Die tatsächlich benötigte Meterzahl hängt
+      von der Anordnung Ihrer Motive auf der Rolle ab.
+    </p>
+    <p>
+      Maßgeblich sind allein die Preise, Steuern und Versandkosten, die der Shop <a href={SHOP.home} rel="noopener">selini-shirt.de</a> im
+      Bestellvorgang ausweist. Weichen Angaben auf dieser Website davon ab, gilt der Shop.
+    </p>
+  </section>
+
+  <section id="bestellung">
+    <h2>Bestellungen im Shop</h2>
+    <p>
+      Die Schaltflächen und Links dieser Website, etwa „Zum Shop“, führen zum Shop selini-shirt.de, den ebenfalls die {LEGAL_ENTITY.name} betreibt. Für
+      Bestellungen, Zahlung, Lieferung, Gewährleistung und ein etwaiges Widerrufsrecht gelten ausschließlich die Bedingungen und Informationen des Shops,
+      insbesondere dessen <a href={SHOP_TERMS_URL} rel="noopener">Allgemeine Geschäftsbedingungen</a>.
+    </p>
+    <p>
+      Individuelle Angebote, die wir Ihnen auf Anfrage per E-Mail, Telefon oder WhatsApp machen, richten sich nach dem Inhalt des jeweiligen Angebots.
+    </p>
+  </section>
+
+  <section id="technische-angaben">
+    <h2>Technische Angaben</h2>
+    <p>
+      Angaben zu Pressparametern (Temperatur, Zeit, Druck), Haltbarkeit, Waschbarkeit, geeigneten Textilien und Dateivorgaben sind Richtwerte aus
+      unserer Produktionspraxis. Das Ergebnis hängt von Ihrer Presse, dem Textil und der Verarbeitung ab.
+    </p>
+    <p>
+      Bitte machen Sie vor einer Serie eine Probepressung auf dem Originaltextil. Eine bestimmte Beschaffenheit oder Eignung für einen bestimmten Zweck
+      sichern wir mit den Angaben auf dieser Website nicht zu.
+    </p>
+  </section>
+
+  <section id="nutzung">
+    <h2>Zulässige Nutzung</h2>
+    <p>Sie dürfen die Website im üblichen Rahmen aufrufen und ihre Inhalte für sich nutzen. Nicht gestattet ist insbesondere:</p>
+    <ul>
+      <li>die Website oder ihre Technik zu stören, zu überlasten oder Sicherheitsvorkehrungen zu umgehen</li>
+      <li>Inhalte automatisiert in großem Umfang auszulesen, soweit dies über die übliche Erfassung durch Suchmaschinen hinausgeht</li>
+      <li>auf den nicht öffentlichen Verwaltungsbereich zuzugreifen, ohne dazu berechtigt zu sein</li>
+      <li>die Website für rechtswidrige Zwecke zu verwenden</li>
+    </ul>
+  </section>
+
+  <section id="geistiges-eigentum">
+    <h2>Geistiges Eigentum</h2>
+    <p>
+      Texte, Fotos, Grafiken, Logos und das Layout dieser Website sind urheber- und markenrechtlich geschützt. Sie dürfen die Inhalte für Ihren eigenen
+      Gebrauch ansehen, speichern und ausdrucken. Jede darüber hinausgehende Nutzung, insbesondere die Vervielfältigung, Veröffentlichung oder
+      gewerbliche Verwendung, bedarf unserer vorherigen Zustimmung in Textform. Verlinkungen auf diese Website sind willkommen.
+    </p>
+  </section>
+
+  <section id="externe-links">
+    <h2>Externe Links</h2>
+    <p>
+      Die Website enthält Links zu Seiten Dritter, etwa zu sozialen Netzwerken, WhatsApp und Google Maps. Für deren Inhalte und Datenverarbeitung sind
+      allein die jeweiligen Betreiber verantwortlich. Näheres steht im <a href="/impressum#haftung-links">Impressum</a> und in der{' '}
+      <a href="/datenschutz#links">Datenschutzerklärung</a>.
+    </p>
+  </section>
+
+  <section id="verfuegbarkeit">
+    <h2>Verfügbarkeit</h2>
+    <p>
+      Wir bemühen uns, die Website ohne Unterbrechung bereitzustellen, schulden aber keine bestimmte Verfügbarkeit. Wir können Inhalte jederzeit
+      ändern, ergänzen oder entfernen und den Betrieb vorübergehend oder dauerhaft einstellen.
+    </p>
+  </section>
+
+  <section id="haftung">
+    <h2>Haftung</h2>
+    <p>
+      Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit, bei der Verletzung von Leben, Körper oder Gesundheit, nach dem
+      Produkthaftungsgesetz sowie im Umfang einer von uns übernommenen Garantie.
+    </p>
+    <p>
+      Bei leicht fahrlässiger Verletzung einer Pflicht, deren Erfüllung die ordnungsgemäße Nutzung der Website überhaupt erst ermöglicht und auf deren
+      Einhaltung Sie regelmäßig vertrauen dürfen (wesentliche Pflicht), ist unsere Haftung auf den vorhersehbaren, typischen Schaden begrenzt. Im
+      Übrigen ist die Haftung für leichte Fahrlässigkeit ausgeschlossen. Diese Beschränkungen gelten auch zugunsten unserer gesetzlichen Vertreter und
+      Mitarbeiter.
+    </p>
+    <p>Die Haftung aus Verträgen, die Sie im Shop schließen, richtet sich nach den dortigen Bedingungen und dem Gesetz.</p>
+  </section>
+
+  <section id="datenschutz">
+    <h2>Datenschutz</h2>
+    <p>
+      Wie wir mit personenbezogenen Daten umgehen, steht in der <a href="/datenschutz">Datenschutzerklärung</a> und in der{' '}
+      <a href="/cookies">Cookie-Richtlinie</a>.
+    </p>
+  </section>
+
+  <section id="schluss">
+    <h2>Schlussbestimmungen</h2>
+    <p>
+      Wir können diese Nutzungsbedingungen mit Wirkung für die Zukunft ändern, etwa wenn sich die Website oder die Rechtslage ändert. Es gilt die
+      Fassung, die bei Ihrem Besuch hier veröffentlicht ist.
+    </p>
+    <p>
+      Es gilt das Recht der Bundesrepublik Deutschland. Sind Sie Verbraucher mit gewöhnlichem Aufenthalt in einem anderen Staat der Europäischen
+      Union, bleiben die zwingenden Verbraucherschutzvorschriften dieses Staates unberührt. Sind Sie Kaufmann, juristische Person des öffentlichen
+      Rechts oder öffentlich-rechtliches Sondervermögen, ist Berlin Gerichtsstand für alle Streitigkeiten aus der Nutzung dieser Website.
+    </p>
+    <p>
+      Sollte eine Bestimmung dieser Nutzungsbedingungen unwirksam sein oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt.
+    </p>
+    <p>
+      Fragen zu diesen Bedingungen richten Sie bitte an <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a> oder telefonisch an{' '}
+      <a href={COMPANY.phoneHref}>{COMPANY.phoneDisplay}</a>.
+    </p>
+  </section>
+</LegalPage>

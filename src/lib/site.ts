@@ -1,4 +1,5 @@
 import { type Cms, fill, stripMeta } from './cms';
+import { LEGAL_LINKS, type LegalLink } from './legal';
 import { settingsFrom, type SiteSettings } from './settings';
 
 /**
@@ -12,8 +13,8 @@ export interface SiteView {
   /** Canonical selini-shirt.de URLs (`shared.shop`); every fixed shop link on the page comes from here. */
   SHOP: ReturnType<typeof stripMeta<Cms['shared']['shop']>>;
   COMPANY: ReturnType<typeof stripMeta<Cms['shared']['company']>>;
-  /** Footer legal links (`shared.legal.items`). */
-  LEGAL_LINKS: ReturnType<typeof stripMeta<Cms['shared']['legal']['items']>>;
+  /** Footer legal links: this site's own legal pages (src/lib/legal.ts). */
+  LEGAL_LINKS: LegalLink[];
 }
 
 export function buildSiteView(cms: Cms): SiteView {
@@ -23,7 +24,7 @@ export function buildSiteView(cms: Cms): SiteView {
     SITE_NAME: cms.site.name,
     SHOP: stripMeta(cms.shared.shop),
     COMPANY: stripMeta(cms.shared.company),
-    LEGAL_LINKS: stripMeta(cms.shared.legal.items),
+    LEGAL_LINKS,
   };
 }
 
