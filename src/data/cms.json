@@ -1,0 +1,524 @@
+{
+  "_label": "DTF Transferprint",
+  "site": {
+    "_label": "Website & Live-URL",
+    "_help": "Globale Angaben: Live-Adresse, Seitenname, Stand der Inhalte, SEO-Vorlagen, Kopfzeile und Fußzeile.",
+    "_hints": {
+      "liveUrl": "Produktions-Adresse mit https://, z. B. https://dtf-transferprint.de. Leer lassen, solange die Seite nicht live ist. Die Umgebungsvariable PUBLIC_SITE_URL hat Vorrang.",
+      "name": "Name der Website (og:site_name und strukturierte Daten).",
+      "lastmod": "Datum der letzten Inhaltsänderung im Format JJJJ-MM-TT. Erscheint in der Sitemap. Bei jeder Textänderung aktualisieren."
+    },
+    "liveUrl": "https://dtf-transferprint.de",
+    "name": "DTF Transferprint",
+    "lastmod": "2026-11-26",
+    "seo": {
+      "_label": "SEO-Vorlagen Startseite",
+      "_help": "Titel und Meta-Beschreibung der Startseite. Preise werden automatisch aus der Preisverwaltung eingesetzt.",
+      "_hints": {
+        "titleTemplate": "Platzhalter: {price} = Meterpreis (z. B. 8,24). Keyword zuerst, max. 60 Zeichen.",
+        "descriptionTemplate": "Platzhalter: {price} = Meterpreis, {lowestTierPrice} = günstigster Staffelpreis. 140–160 Zeichen."
+      },
+      "titleTemplate": "DTF Transfer bestellen – ab {price} €/m aus Berlin | Selini",
+      "descriptionTemplate": "DTF Transfers aus eigener Berliner Produktion: Meterware 56 cm breit ab {price} € pro Meter, Staffel bis {lowestTierPrice} €/m, Produktion in 24–48 h. Ab 1 Stück bestellen."
+    },
+    "skipLink": "Direkt zum Inhalt",
+    "logo": {
+      "_label": "Logo-Schriftzug",
+      "_hints": {
+        "first": "Teil vor dem Schrägstrich",
+        "second": "Teil nach dem Schrägstrich",
+        "secondShort": "Kurzform für sehr schmale Bildschirme (nur Kopfzeile)"
+      },
+      "first": "DTF",
+      "second": "TRANSFERPRINT",
+      "secondShort": "PRINT"
+    },
+    "header": {
+      "_label": "Kopfzeile & Navigation",
+      "_hints": {
+        "ariaLabel": "Vorlesetext für Screenreader",
+        "ctaPrefix": "Wird nur auf breiteren Bildschirmen vor dem Button-Text angezeigt"
+      },
+      "ariaLabel": "Hauptnavigation",
+      "links": [
+        { "label": "Preise", "href": "#preise" },
+        { "label": "Pressen", "href": "#pressen" },
+        { "label": "Datei", "href": "#datei" },
+        { "label": "Vergleich", "href": "#vergleich" },
+        { "label": "FAQ", "href": "#faq" }
+      ],
+      "ctaPrefix": "Zum",
+      "ctaLabel": "Shop"
+    },
+    "footer": {
+      "_label": "Fußzeile",
+      "_hints": {
+        "ratingLabel": "Platzhalter: {rating} = Google-Bewertung aus den Firmendaten",
+        "copyright": "Platzhalter: {year} = aktuelles Jahr, {legalName} = Firmenname, {priceStand} = Preisstand-Hinweis",
+        "socialAriaLabel": "Vorlesetext für Screenreader",
+        "shopNavAriaLabel": "Vorlesetext für Screenreader",
+        "legalNavAriaLabel": "Vorlesetext für Screenreader"
+      },
+      "text": "DTF Transfers aus der Berliner Werkstatt von Selini-Shirt (BYSELINI UG). Für Firmen, Vereine, Merch und alle, die selbst pressen.",
+      "ratingLabel": "Google-Bewertung {rating}/5",
+      "shopCtaLabel": "DTF Transfer Meterware bestellen",
+      "contactTitle": "Kontakt",
+      "whatsappLabel": "WhatsApp schreiben",
+      "socialAriaLabel": "Soziale Medien",
+      "shopNavTitle": "Selini-Shirt",
+      "shopNavAriaLabel": "Selini-Shirt",
+      "shopLinks": [
+        { "label": "Startseite", "href": "https://selini-shirt.de/" },
+        { "label": "Alle Produkte", "href": "https://selini-shirt.de/products/" },
+        { "label": "DTF Transfers Service", "href": "https://selini-shirt.de/dtf-transfers/" },
+        { "label": "DTF Ratgeber", "href": "https://selini-shirt.de/dtf-ratgeber-und-infos" },
+        { "label": "Muster anfragen", "href": "https://selini-shirt.de/kontakt/" },
+        { "label": "Druckvorlagen", "href": "https://selini-shirt.de/druckvorlagen/" },
+        { "label": "Kontakt", "href": "https://selini-shirt.de/kontakt/" }
+      ],
+      "legalNavTitle": "Rechtliches",
+      "legalNavAriaLabel": "Rechtliche Informationen",
+      "copyright": "© {year} {legalName}. Alle Rechte vorbehalten. Alle Preise {priceStand}.",
+      "madeIn": "Made in Berlin"
+    }
+  },
+  "shared": {
+    "_label": "Firmendaten, Shop-Links & Preise",
+    "company": {
+      "_label": "Firmendaten",
+      "_hints": {
+        "phoneHref": "Telefon-Link, z. B. tel:+491791298038",
+        "phoneE164": "Telefon im internationalen Format für Google (strukturierte Daten)",
+        "googleRating": "Anzeige-Wert, z. B. 4,9"
+      },
+      "legalName": "BYSELINI UG",
+      "brand": "Selini-Shirt",
+      "street": "Klingsorstraße 31-33",
+      "postalCode": "12167",
+      "city": "Berlin",
+      "district": "Steglitz",
+      "phoneDisplay": "+49 (0) 179 1298038",
+      "phoneHref": "tel:+491791298038",
+      "phoneE164": "+491791298038",
+      "email": "info@byselini.de",
+      "whatsapp": "https://wa.me/4917660976813",
+      "googleRating": "4,9",
+      "googleRatingUrl": "https://maps.app.goo.gl/RUx3953YcBxNfUqA8",
+      "social": [
+        { "label": "Instagram", "href": "https://www.instagram.com/selini.transferprint/" },
+        { "label": "Facebook", "href": "https://www.facebook.com/SeliniTransferprint/" },
+        { "label": "YouTube", "href": "https://www.youtube.com/@transferprint609" }
+      ]
+    },
+    "shop": {
+      "_label": "Shop-Links (selini-shirt.de)",
+      "_help": "Feste Ziel-Adressen der Buttons und Links auf selini-shirt.de. Bei geänderten Shop-Adressen hier anpassen.",
+      "home": "https://selini-shirt.de/",
+      "products": "https://selini-shirt.de/products/",
+      "contact": "https://selini-shirt.de/kontakt/",
+      "consulting": "https://selini-shirt.de/beratung/",
+      "support": "https://selini-shirt.de/support/",
+      "faq": "https://selini-shirt.de/faq/",
+      "samples": "https://selini-shirt.de/kontakt/",
+      "templates": "https://selini-shirt.de/druckvorlagen/",
+      "about": "https://selini-shirt.de/ueber-uns/",
+      "meterware": "https://selini-shirt.de/product/dtf-transfer-meterware-bestellen",
+      "bundle100": "https://selini-shirt.de/product/dtf-transfer-bundle-100-meter",
+      "bundle250": "https://selini-shirt.de/product/dtf-transfer-bundle-250-meter",
+      "bundle500": "https://selini-shirt.de/product/dtf-transfer-bundle-500-meter",
+      "dtfCategory": "https://selini-shirt.de/products/?category=dtf-transfer",
+      "bundleCategory": "https://selini-shirt.de/products/?category=dtf-tranfer-bundles-b2b-wiederverkaeufer",
+      "dtfService": "https://selini-shirt.de/dtf-transfers/",
+      "dtfGuide": "https://selini-shirt.de/dtf-ratgeber-und-infos",
+      "dtfDurability": "https://selini-shirt.de/dtf-haltbarkeit",
+      "blockout": "https://selini-shirt.de/blockout",
+      "screenPrint": "https://selini-shirt.de/siebdruck/",
+      "sublimation": "https://selini-shirt.de/sublimation/",
+      "flexFlock": "https://selini-shirt.de/flex-und-flockfoliendruck/",
+      "embroidery": "https://selini-shirt.de/direkteinstickung/",
+      "workwearCategory": "https://selini-shirt.de/products/?category=firmenkleidung-mit-logo-bedrucken-und-besticken-in-berlin",
+      "tshirtLogo": "https://selini-shirt.de/product/t-shirts-firmenlogo-bedrucken-besticken-berlin",
+      "hoodieLogo": "https://selini-shirt.de/product/hoodie-individuell-bedrucken-besticken"
+    },
+    "legal": {
+      "_label": "Rechtliche Links",
+      "_help": "Links in der Fußzeile unter „Rechtliches“.",
+      "items": [
+        { "label": "Impressum", "href": "https://selini-shirt.de/rechtliches/impressum" },
+        { "label": "Datenschutz", "href": "https://selini-shirt.de/rechtliches/datenschutz" },
+        { "label": "AGB", "href": "https://selini-shirt.de/rechtliches/agb" },
+        { "label": "Nutzungsbedingungen", "href": "https://selini-shirt.de/rechtliches/nutzungsbedingungen" },
+        { "label": "Cookie-Richtlinie", "href": "https://selini-shirt.de/rechtliches/cookies" }
+      ]
+    },
+    "pricing": {
+      "_label": "Preise & Staffeln",
+      "_help": "Alle Zahlen des Preisrechners und der Staffeltabelle. Staffelmengen aufsteigend, Meterpreise dürfen nicht steigen. Nach „Veröffentlichen“ sofort online.",
+      "_hints": {
+        "basePricePerMeter": "Preis pro Meter in Euro (Zahl, z. B. 8.24)",
+        "rollWidthCm": "Rollenbreite in cm",
+        "maxQuantity": "Höchste Anzahl im Preisrechner",
+        "priceUpdatedLabel": "Preisstand, z. B. November 2026 (max. 80 Zeichen)",
+        "experienceYears": "Jahre Erfahrung",
+        "deliveryLabel": "Lieferzeit-Text (max. 80 Zeichen)",
+        "recommendedDpi": "Empfohlene Auflösung in dpi",
+        "locationLabel": "Produktionsort (max. 80 Zeichen)",
+        "formats": "Format-Preis = Fläche in m² × (Meterpreis ÷ 0,56 m²)",
+        "tiers": "Mengen aufsteigend, Preise dürfen nicht steigen"
+      },
+      "basePricePerMeter": 8.24,
+      "rollWidthCm": 56,
+      "maxQuantity": 100,
+      "priceUpdatedLabel": "November 2026",
+      "experienceYears": 30,
+      "deliveryLabel": "24–48 h Produktion",
+      "recommendedDpi": 300,
+      "locationLabel": "Berlin",
+      "formats": [
+        { "key": "A6", "widthCm": 10.5, "heightCm": 14.8, "unitPrice": 0.23 },
+        { "key": "A5", "widthCm": 14.8, "heightCm": 21, "unitPrice": 0.46 },
+        { "key": "A4", "widthCm": 21, "heightCm": 29.7, "unitPrice": 0.92 },
+        { "key": "A3", "widthCm": 29.7, "heightCm": 42, "unitPrice": 1.84 },
+        { "key": "A2", "widthCm": 42, "heightCm": 59.4, "unitPrice": 3.67 },
+        { "key": "1 M", "widthCm": 56, "heightCm": 100, "unitPrice": 8.24 }
+      ],
+      "tiers": [
+        { "quantity": 1, "pricePerMeter": 8.24 },
+        { "quantity": 5, "pricePerMeter": 7.83 },
+        { "quantity": 10, "pricePerMeter": 7.58 },
+        { "quantity": 25, "pricePerMeter": 7.42 },
+        { "quantity": 50, "pricePerMeter": 7.17 },
+        { "quantity": 100, "pricePerMeter": 7 },
+        { "quantity": 250, "pricePerMeter": 6 },
+        { "quantity": 500, "pricePerMeter": 4.5 }
+      ]
+    },
+    "bundles": {
+      "_label": "B2B-Bundles",
+      "_help": "Feste Bundle-Produkte im Shop (keine Staffel). Preis pro Meter in Euro als Zahl.",
+      "items": [
+        { "meters": 100, "price": 7, "href": "https://selini-shirt.de/product/dtf-transfer-bundle-100-meter" },
+        { "meters": 250, "price": 6, "href": "https://selini-shirt.de/product/dtf-transfer-bundle-250-meter" },
+        { "meters": 500, "price": 4.5, "href": "https://selini-shirt.de/product/dtf-transfer-bundle-500-meter" }
+      ]
+    }
+  },
+  "pages": {
+    "home": {
+      "_label": "Startseite",
+      "_path": "/",
+      "seo": {
+        "_label": "SEO & Social-Vorschau",
+        "_help": "Titel und Beschreibung kommen aus den SEO-Vorlagen unter „Website & Live-URL“. Hier: Vorschaubild für Social Media.",
+        "ogImage": { "src": "/images/dtf-hero.webp", "alt": "Farbstarker DTF-Transfer auf einem schwarzen Shirt", "width": 1983, "height": 793 }
+      },
+      "structuredData": {
+        "_label": "Strukturierte Daten (Google)",
+        "_help": "Werte für die unsichtbaren Google-Daten (JSON-LD) der Seite.",
+        "_hints": {
+          "productDescription": "Platzhalter: {rollWidth} = Rollenbreite in cm"
+        },
+        "areaServed": "Berlin",
+        "productName": "DTF Transfer Meterware 560 × 1000 mm",
+        "productDescription": "DTF Transfer als Meterware, {rollWidth} cm breit, pressfertig mit Weißunterlegung. Hot Peel, 130–150 °C, 7–8 s. Produktion in Berlin, 24–48 h nach Zahlungseingang, ab 1 Stück.",
+        "productCategory": "DTF Transfer",
+        "breadcrumbServiceName": "DTF Transfers",
+        "breadcrumbPageName": "DTF Transfer bestellen"
+      },
+      "common": {
+        "_label": "Preisstand-Hinweis",
+        "_help": "Wird an mehreren Stellen der Seite eingesetzt (Platzhalter {priceStand}).",
+        "_hints": {
+          "priceStand": "Platzhalter: {priceUpdated} = Preisstand aus der Preisverwaltung"
+        },
+        "priceStand": "Stand {priceUpdated}, Preis laut Shop"
+      },
+      "ticker": {
+        "_label": "Laufband (ganz oben)",
+        "_hints": {
+          "ariaLabel": "Vorlesetext für Screenreader",
+          "srText": "Vorlesetext für Screenreader. Platzhalter: {price}, {rollWidth}",
+          "items": "Platzhalter: {price} = Meterpreis, {rollWidth} = Rollenbreite"
+        },
+        "ariaLabel": "Service-Vorteile",
+        "srText": "DTF ab {price} Euro pro Meter, 24 bis 48 Stunden Produktion, Hot Peel bei 130 bis 150 Grad, Meterware mit {rollWidth} Zentimetern Breite, ab 1 Stück aus Berlin.",
+        "items": [
+          "DTF AB {price} € PRO METER",
+          "24–48 H PRODUKTION",
+          "HOT PEEL · 130–150 °C · 7–8 S",
+          "METERWARE · {rollWidth} CM BREIT",
+          "AB 1 STÜCK · BERLIN"
+        ]
+      },
+      "hero": {
+        "_label": "Hero (oberster Bereich)",
+        "_hints": {
+          "h1Line1": "Erste Zeile der Hauptüberschrift",
+          "h1Line2": "Zweite Zeile (Outline-Schrift)",
+          "subline": "Platzhalter: {price} = Meterpreis",
+          "lead": "Platzhalter: {price}, {rollWidth}, {lowestTierPrice}",
+          "scrollHint": "Kleiner Hinweis unten links",
+          "materials": "Kleiner Hinweis unten rechts"
+        },
+        "eyebrow": "Produziert in Berlin-Steglitz. Direkt von Selini-Shirt.",
+        "h1Line1": "DTF-Transfer",
+        "h1Line2": "bestellen.",
+        "subline": "Aus Berlin, ab {price} € pro Meter, in 24–48 h produziert.",
+        "lead": "DTF Transfers aus eigener Berliner Produktion: Meterware {rollWidth} × 100 cm ab {price} € pro Meter, ab 1 Stück, 24–48 h nach Zahlungseingang produziert. Du bekommst pressfertige Hot-Peel-Transfers mit Weißunterlegung für Baumwolle, Polyester und Mischgewebe, Staffelpreise bis {lowestTierPrice} €/m.",
+        "ctaLabel": "DTF Meterware bestellen",
+        "secondaryCtaLabel": "Staffelpreise",
+        "scrollHint": "SCROLL, UM DIE FOLIE ZU LÜFTEN",
+        "materials": "Baumwolle · Polyester · Mischgewebe",
+        "image": { "src": "/images/dtf-hero.webp", "alt": "Frisch produzierter, farbintensiver DTF-Transfer wird von einem schwarzen Shirt abgezogen", "width": 1983, "height": 793 }
+      },
+      "facts": {
+        "_label": "Eckdaten-Leiste",
+        "_hints": {
+          "ariaLabel": "Vorlesetext für Screenreader",
+          "items": "Platzhalter: {price}, {rollWidth}, {delivery}, {years}, {location} (aus der Preisverwaltung)"
+        },
+        "ariaLabel": "Eckdaten",
+        "items": [
+          { "value": "ab {price} €", "label": "pro Meter · {rollWidth} × 100 cm" },
+          { "value": "{delivery}", "label": "nach Zahlungseingang" },
+          { "value": "ab 1 Stück", "label": "keine Mindestmenge" },
+          { "value": "{years}+", "label": "Jahre Textilveredelung in {location}" }
+        ]
+      },
+      "pricing": {
+        "_label": "Preisrechner & Staffelpreise",
+        "_hints": {
+          "intro": "Platzhalter: {rollWidth}, {price}, {priceStand}",
+          "formatAriaLabel": "Vorlesetext je Format-Button. Platzhalter: {format}, {size}, {unitPrice}",
+          "quantityAriaLabel": "Vorlesetext für Screenreader",
+          "resultNote": "Platzhalter: {price}",
+          "resultCtaLabel": "Platzhalter: {rollWidth}",
+          "bundlesText": "Platzhalter: {rollWidth}, {priceStand}",
+          "bundleItemLabel": "Platzhalter: {meters} = Bundle-Größe in Metern",
+          "footnote": "Platzhalter: {price}, {rollWidth}, {priceStand}",
+          "tierBaseLabel": "Text in der Rabatt-Spalte der ersten Staffel"
+        },
+        "eyebrow": "PREISLABOR",
+        "title": "Was kostet ein DTF Transfer?",
+        "intro": "Ein Meter DTF Transfer ({rollWidth} × 100 cm) kostet {price} € ({priceStand}). Der Rechner teilt den Meterpreis auf Standardformate herunter, die Tabelle darunter zeigt, wie der Meterpreis mit der Menge sinkt.",
+        "formatLabel": "FORMAT WÄHLEN",
+        "formatAriaLabel": "{format}, {size}, {unitPrice} Euro pro Stück",
+        "quantityLabel": "ANZAHL MOTIVE",
+        "quantityAriaLabel": "Anzahl der Motive",
+        "sizeLabel": "Format",
+        "areaLabel": "Fläche gesamt",
+        "resultEyebrow": "REINER FLÄCHENVERGLEICH",
+        "resultNote": "Formatpreis × Menge, abgeleitet aus {price} € pro Meter. Im Shop bestellst du ganze Meter; Staffel und Endpreis stehen dort.",
+        "resultCtaLabel": "DTF Transfer Meterware {rollWidth} cm bestellen",
+        "tiersTitle": "Staffelpreise pro Meter",
+        "tiersQuantityHeader": "Ab Menge",
+        "tiersPriceHeader": "€ pro Meter",
+        "tiersDiscountHeader": "Rabatt",
+        "tierBaseLabel": "Basis",
+        "bundlesEyebrow": "B2B-BUNDLES FÜR WIEDERVERKÄUFER",
+        "bundlesTitle": "Große Mengen, Abruf nach Bedarf",
+        "bundlesText": "Vorkasse, {rollWidth} cm breit, Abruf in mehreren Bestellungen, Versand 7,00 € je Lieferung. Preise {priceStand}.",
+        "bundleItemLabel": "{meters} m Bundle",
+        "bundlesLinkLabel": "Alle DTF Bundles im Shop",
+        "footnote": "Basis: {price} € pro Laufmeter ({rollWidth} cm Breite), {priceStand}. Verbindlich ist der Preis im Warenkorb.",
+        "footnoteShipping": "Versand und Steuer weist der Shop im Warenkorb aus."
+      },
+      "production": {
+        "_label": "Produktion (Wer druckt?)",
+        "_hints": {
+          "text": "Platzhalter: {years} = Jahre Erfahrung",
+          "captionLeft": "Bildunterschrift links",
+          "captionRight": "Bildunterschrift rechts"
+        },
+        "eyebrow": "NICHT WEITERGEREICHT. SELBST GEMACHT.",
+        "title": "Wer druckt deine DTF Transfers?",
+        "text": "Selini-Shirt (BYSELINI UG) veredelt seit über {years} Jahren Textilien in Berlin-Steglitz: Siebdruck, DTF und DTI, Stick, Sublimation, Flex und Flock unter einem Dach. Die DTF/DTI-Maschine ist laut Shop eine von nur drei dieser Art in Europa. Gedruckt wird mit wasserbasierten Farben, der Datencheck vor dem Druck ist kostenlos.",
+        "badges": [
+          "Eigene Produktion",
+          "Wasserbasierte Farben",
+          "Abholung in Berlin"
+        ],
+        "serviceLinkLabel": "DTF Transfers Service bei Selini-Shirt",
+        "aboutLinkLabel": "Über Selini-Shirt",
+        "image": { "src": "/images/dtf-production.webp", "alt": "Rollendrucker produziert eine farbige Transferfolie in einer professionellen Druckwerkstatt", "width": 1672, "height": 941 },
+        "captionLeft": "DTF-PRODUKTION · SYMBOLBILD",
+        "captionRight": "CMYK + WEISS"
+      },
+      "pressing": {
+        "_label": "Pressen (Anleitung & Pflege)",
+        "_hints": {
+          "steps": "Symbol: Thermometer, Ruler, Flame, Hand, Timer, Shirt, Palette, Upload, FileImage, FileCheck"
+        },
+        "eyebrow": "HOT PEEL · 130–150 °C · 7–8 S",
+        "title": "So presst du DTF richtig.",
+        "intro": "Die Parameter stammen von der Shop-Produktseite der DTF Meterware. Sie sind Richtwerte: Jede Presse und jeder Stoff reagiert etwas anders, darum erst ein Reststück testen, dann die Serie pressen.",
+        "steps": [
+          { "icon": "Thermometer", "title": "Kurz vorpressen", "text": "Textil glatt auflegen und kurz vorpressen. Das entfernt Restfeuchte und Falten, damit der Kleber gleichmäßig greift." },
+          { "icon": "Ruler", "title": "Transfer positionieren", "text": "Motiv mit der Folienseite nach oben auflegen. Bei Gang Sheets einzelne Motive vorher mit der Schere trennen." },
+          { "icon": "Flame", "title": "130–150 °C, 7–8 s", "text": "Laut Shop-Produktseite bei 130–150 °C für 7–8 Sekunden pressen. Temperatur und Zeit sind Richtwerte, die du am Originalstoff testest." },
+          { "icon": "Hand", "title": "Hot Peel", "text": "Folie direkt nach dem Öffnen heiß und zügig in einem Zug abziehen. Hängt Farbe an der Folie, war die Presse zu kalt oder zu kurz." },
+          { "icon": "Timer", "title": "3–4 s nachpressen", "text": "Ohne Folie noch einmal 3–4 Sekunden nachpressen. Das verankert den Druck im Gewebe und macht die Oberfläche matter und weicher." }
+        ],
+        "careTitle": "PFLEGE: SO HÄLT DER DRUCK 50+ WÄSCHEN",
+        "careItems": [
+          "Bei 30–40 °C auf links waschen.",
+          "Kein Trockner, liegend oder hängend trocknen.",
+          "Kein Weichspüler, er löst den Kleber an.",
+          "Nicht direkt über den Druck bügeln."
+        ],
+        "noteEyebrow": "RICHTWERTE, KEIN GESETZ",
+        "noteText": "Der Shop-Ratgeber nennt für andere Transfer-Varianten 150–170 °C, 10–15 s und Cold Peel. Für die Meterware gelten die Werte der Produktseite. Dicke Hoodies brauchen tendenziell mehr Zeit, dünne Funktionsstoffe weniger Temperatur. Teste am Originalstoff, bevor du die Serie presst.",
+        "guideLinkLabel": "DTF Ratgeber lesen",
+        "durabilityLinkLabel": "DTF Haltbarkeit im Detail"
+      },
+      "files": {
+        "_label": "Datei (Druckdaten)",
+        "_hints": {
+          "intro": "Platzhalter: {dpi}, {rollWidth}",
+          "rules": "Titel-Platzhalter: {dpi}. Symbol: FileImage, FileCheck, Palette, Upload, Ruler, Shirt, Thermometer, Flame, Hand, Timer",
+          "captionLeft": "Bildunterschrift links",
+          "captionRight": "Bildunterschrift rechts"
+        },
+        "eyebrow": "DATEI RICHTIG ANLEGEN",
+        "title": "Welche Datei braucht DTF?",
+        "intro": "PNG oder PDF mit {dpi} dpi, CMYK, transparentem Hintergrund, Schriften in Pfaden und Linien ab 0,6 mm. Motive ordnest du auf {rollWidth} cm Breite an; der Datencheck bei Selini-Shirt ist kostenlos.",
+        "templatesLinkLabel": "Druckvorlagen und Datenvorgaben herunterladen",
+        "image": { "src": "/images/dtf-gangsheet.webp", "alt": "Farbig bedruckter Gang Sheet neben einem schwarzen Shirt mit fertigem Transfermotiv", "width": 1400, "height": 1050 },
+        "captionLeft": "GANG SHEET + ERGEBNIS",
+        "captionRight": "SYMBOLBILD",
+        "rules": [
+          { "icon": "FileImage", "title": "PNG oder PDF", "text": "Druckfertige Datei, keine Screenshots. Bei PDF alle Ebenen reduziert." },
+          { "icon": "FileCheck", "title": "{dpi} dpi", "text": "In Endgröße angelegt, damit Kanten und feine Linien scharf bleiben." },
+          { "icon": "Palette", "title": "CMYK empfohlen", "text": "RGB wird konvertiert; Neon- und Sonderfarben lassen sich mit DTF nicht exakt treffen." },
+          { "icon": "Upload", "title": "Transparenter Hintergrund", "text": "Alles, was nicht transparent ist, wird gedruckt, auch weiße Flächen." },
+          { "icon": "Ruler", "title": "Strichstärke ≥ 0,6 mm", "text": "Dünnere Linien und Haarlinien brechen beim Pudern oder Abziehen weg." },
+          { "icon": "Shirt", "title": "Schriften in Pfade", "text": "Texte in Kurven umwandeln, sonst ersetzt der Druck fehlende Fonts." }
+        ]
+      },
+      "comparison": {
+        "_label": "Vergleich (DTF, Siebdruck, Sublimation)",
+        "_hints": {
+          "rows": "Je Zeile: Frage, dann die Antwort für DTF, Siebdruck und Sublimation",
+          "nextRowLabel": "Beschriftung der letzten Tabellenzeile mit den Links"
+        },
+        "eyebrow": "VERFAHREN IM VERGLEICH",
+        "title": "DTF, Siebdruck oder Sublimation?",
+        "intro": "DTF für kleine bis mittlere Mengen und bunte Motive auf fast jedem Stoff. Siebdruck, sobald die Auflage groß und das Motiv einfarbig wird. Sublimation nur für helles Polyester, dafür ohne fühlbare Schicht.",
+        "questionHeader": "Frage",
+        "dtfHeader": "DTF Transfer",
+        "screenPrintHeader": "Siebdruck",
+        "sublimationHeader": "Sublimation",
+        "rows": [
+          { "question": "Ab welcher Menge?", "dtf": "ab 1 Stück, Staffel ab 5 m", "screenPrint": "Mindestmenge 10, lohnt ab ca. 50 Stück", "sublimation": "ab 1 Stück" },
+          { "question": "Welche Stoffe?", "dtf": "Baumwolle, Polyester, Mischgewebe, hell und dunkel", "screenPrint": "Baumwolle, Mischgewebe, viele Textilarten", "sublimation": "nur Polyester, nur helle Stoffe" },
+          { "question": "Welche Motive?", "dtf": "Fotorealistisch, Verläufe, feine Details, Weißunterlegung", "screenPrint": "Flächige Motive mit wenigen Farben, Sonderfarben, Neon", "sublimation": "Vollflächig bis in die Naht, ohne fühlbare Schicht" },
+          { "question": "Typischer Einsatz", "dtf": "Kleinserien, Merch, Selbstpresser, gemischte Motive", "screenPrint": "Große Auflagen, Workwear, Bandshirts", "sublimation": "Trikots, Laufshirts, Sportbekleidung" }
+        ],
+        "nextRowLabel": "Weiter",
+        "dtfLinkLabel": "DTF Meterware bestellen",
+        "screenPrintLinkLabel": "Siebdruck bei Selini-Shirt",
+        "sublimationLinkLabel": "Sublimation bei Selini-Shirt"
+      },
+      "audiences": {
+        "_label": "Für wen lohnt sich DTF?",
+        "_hints": {
+          "items": "Text-Platzhalter: {priceUpdated}, {rollWidth}, {priceStand}. Symbol: Factory, Users, Store, Boxes"
+        },
+        "eyebrow": "FÜR WEN LOHNT SICH DTF?",
+        "title": "Für Firmen, Vereine, Labels und Händler.",
+        "items": [
+          {
+            "icon": "Factory",
+            "title": "Firmen & Workwear",
+            "text": "Logo auf Brust oder Rücken, ab 15 Stück. Fertig veredelte T-Shirts mit Firmenlogo ab 3,50 € pro Stück inkl. Druck (ab 1000 Stück), 7,00 € bei 15–19 Stück, Staffelpreis laut Shop (Stand {priceUpdated}).",
+            "links": [
+              { "label": "T-Shirts mit Firmenlogo ansehen", "href": "https://selini-shirt.de/product/t-shirts-firmenlogo-bedrucken-besticken-berlin" },
+              { "label": "Firmenkleidung mit Logo", "href": "https://selini-shirt.de/products/?category=firmenkleidung-mit-logo-bedrucken-und-besticken-in-berlin" }
+            ]
+          },
+          {
+            "icon": "Users",
+            "title": "Vereine & Teams",
+            "text": "Vereinslogo, Sponsoren und Namen als Transfer. Du presst selbst auf vorhandene Trikots oder lässt bei Selini-Shirt in Berlin veredeln. Ab 1 Stück, Nachbestellung jederzeit.",
+            "links": [
+              { "label": "DTF Transfers für den Verein bestellen", "href": "https://selini-shirt.de/product/dtf-transfer-meterware-bestellen" },
+              { "label": "Muster anfragen", "href": "https://selini-shirt.de/kontakt/" }
+            ]
+          },
+          {
+            "icon": "Store",
+            "title": "Merch, Labels & Creator",
+            "text": "Kleine Drops ohne Siebkosten: Mehrere Motive auf einem Gang Sheet, pressen bei Bedarf, kein Lagerrisiko. Für die dünnere Premium-Variante DTI einfach anfragen.",
+            "links": [
+              { "label": "DTF Kategorie im Shop", "href": "https://selini-shirt.de/products/?category=dtf-transfer" },
+              { "label": "DTI anfragen", "href": "https://selini-shirt.de/kontakt/" }
+            ]
+          },
+          {
+            "icon": "Boxes",
+            "title": "Wiederverkäufer & Druckereien",
+            "text": "B2B-Bundles mit {rollWidth} cm Breite: 100 m zu 7,00 €/m, 250 m zu 6,00 €/m, 500 m zu 4,50 €/m. Vorkasse, Abruf in mehreren Bestellungen, Versand 7,00 € je Lieferung ({priceStand}).",
+            "links": [
+              { "label": "DTF Bundles für Wiederverkäufer", "href": "https://selini-shirt.de/products/?category=dtf-tranfer-bundles-b2b-wiederverkaeufer" },
+              { "label": "500-Meter-Bundle ansehen", "href": "https://selini-shirt.de/product/dtf-transfer-bundle-500-meter" }
+            ]
+          }
+        ]
+      },
+      "faq": {
+        "_label": "FAQ",
+        "_hints": {
+          "items": "Antwort-Platzhalter: {price}, {lowestTierPrice}, {priceStand}, {rollWidth}, {rollArea} (Fläche eines Meters in m²)"
+        },
+        "eyebrow": "HÄUFIGE FRAGEN",
+        "title": "Kurz gefragt. Klar beantwortet.",
+        "intro": "Alles Weitere beantwortet Selini-Shirt persönlich: Telefon, WhatsApp oder Kontaktformular, Beratung kostenlos.",
+        "contactLinkLabel": "Noch eine Frage? Direkt zu Selini",
+        "shopFaqLinkLabel": "Shop-FAQ lesen",
+        "items": [
+          { "question": "Hot Peel oder Cold Peel bei DTF?", "answer": "Die DTF Transfer Meterware von Selini-Shirt ist Hot Peel: Du ziehst die Folie direkt nach dem Pressen heiß ab und presst anschließend 3–4 Sekunden nach. Der Shop-Ratgeber nennt für andere Transfer-Varianten auch Cold Peel mit 150–170 °C und 10–15 Sekunden. Alle Werte sind Richtwerte, die du am Originalstoff testest." },
+          { "question": "Gibt es eine Mindestmenge für DTF Transfers?", "answer": "Nein. Die DTF Transfer Meterware wird ab 1 Stück verkauft, ein Stück ist eine Bahn von 560 × 1000 mm für {price} €. Ab 5 Metern greift der Staffelpreis, bei 500 Metern liegt der Meterpreis bei {lowestTierPrice} € ({priceStand})." },
+          { "question": "Wie lange dauern Produktion und Lieferung?", "answer": "Die Transfers werden 24–48 Stunden nach Zahlungseingang produziert. Der Versand innerhalb Deutschlands dauert 1–2 Werktage. Alternativ holst du die Bestellung in der Berliner Werkstatt in der Klingsorstraße 31-33 ab." },
+          { "question": "Wie viele Motive passen auf einen Meter?", "answer": "Ein Meter hat {rollWidth} × 100 cm Nutzfläche, also {rollArea} m². Rechnerisch passen etwa sechs A4-Motive (2 × 3 im Hochformat) oder rund 30 A6-Motive mit kleinem Abstand auf einen Meter. Je enger du dein Gang Sheet packst, desto günstiger wird jedes einzelne Motiv." },
+          { "question": "Auf welche Stoffe kann ich DTF pressen?", "answer": "DTF hält auf Baumwolle, Polyester und Mischgewebe, auf hellen wie dunklen Textilien, weil jeder Transfer eine Weißunterlegung hat. Bei beschichteten, sehr dehnbaren oder hitzeempfindlichen Stoffen solltest du Temperatur und Presszeit vorher an einem Reststück testen." },
+          { "question": "Wie lange hält ein DTF Druck?", "answer": "Bei richtiger Pflege übersteht ein DTF Transfer laut Selini-Shirt 50 und mehr Waschzyklen. Richtig heißt: 30–40 °C auf links waschen, kein Trockner, kein Weichspüler und nicht direkt über den Druck bügeln." },
+          { "question": "Was ist DTI und wann lohnt es sich?", "answer": "DTI (Direct to Inkjet) ist die Premium-Variante von Selini-Shirt mit einer dünneren, weicheren Transferschicht, die sich auf dem Textil kaum anfühlt. Laut Shop gibt es nur drei Maschinen dieser Art in Europa. DTI lohnt sich für hochwertige Merch- und Label-Projekte und wird über das Kontaktformular angefragt." },
+          { "question": "Kann ich DTF Transfers in Berlin abholen?", "answer": "Ja. Die Produktion sitzt in Berlin-Steglitz, Klingsorstraße 31-33, 12167 Berlin. Die Abholung nach Zahlungseingang ist möglich, sonst geht die Bestellung per Versand in 1–2 Werktagen innerhalb Deutschlands raus." },
+          { "question": "Brauche ich Blockout-DTF bei hellem Polyester?", "answer": "Bei hellem oder weißem Polyester kann Farbstoff aus dem Gewebe in den Druck wandern (Farbmigration), vor allem bei sublimierten Sportstoffen. Blockout-DTF hat dafür eine Sperrschicht. Bei Baumwolle und dunklem Polyester reicht der normale DTF Transfer." }
+        ]
+      },
+      "cta": {
+        "_label": "Abschluss-Aufruf (pinker Bereich)",
+        "_hints": {
+          "title": "Zeilenumbruch mit <br>",
+          "text": "Platzhalter: {price}"
+        },
+        "eyebrow": "BERLIN DRUCKT FÜR DICH",
+        "title": "DEIN MOTIV.<br>UNSER FILM.",
+        "text": "DTF Transfer Meterware ab {price} € pro Meter, 24–48 h Produktion, ab 1 Stück. Fragen zu Datei, Menge oder DTI? Angebot und Datencheck sind kostenlos.",
+        "ctaLabel": "DTF Meterware im Shop bestellen",
+        "quoteLabel": "Angebot anfragen",
+        "whatsappLabel": "WhatsApp"
+      }
+    },
+    "notFound": {
+      "_label": "Fehlerseite (404)",
+      "_path": "/404",
+      "seo": {
+        "_label": "SEO",
+        "title": "Seite nicht gefunden · DTF Transferprint"
+      },
+      "content": {
+        "_label": "Inhalt",
+        "_hints": {
+          "h1": "Zeilenumbruch mit <br>"
+        },
+        "eyebrow": "FEHLDRUCK / 404",
+        "h1": "DIESE SEITE<br>IST AB.",
+        "lead": "Der Link führt ins Leere. Zurück zur DTF-Übersicht oder direkt zum passenden Transfer bei Selini-Shirt.",
+        "homeCtaLabel": "Zur Startseite",
+        "shopCtaLabel": "DTF Transfer Meterware bestellen"
+      }
+    }
+  }
+}

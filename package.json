@@ -3,10 +3,11 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "node scripts/list-images.mjs && astro dev",
     "check": "astro check",
-    "build": "npm run check && astro build",
-    "preview": "astro dev"
+    "build": "node scripts/list-images.mjs && npm run check && astro build",
+    "preview": "astro dev",
+    "auth:schema": "node scripts/auth-schema.mjs"
   },
   "engines": {
     "node": ">=22.19.0"
@@ -16,14 +17,21 @@
     "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/syne": "^5.3.0",
     "@lucide/astro": "^1.57.0",
-    "@netlify/blobs": "^11.1.4",
+    "@netlify/cache": "^4.2.2",
+    "@netlify/database": "^2.0.4",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.8",
+    "better-auth": "^1.7.28",
     "daisyui": "^5.7.50",
+    "pg": "^8.23.1",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@types/pg": "^8.23.1",
+    "@types/qrcode": "^1.5.6",
     "typescript": "^6.0.0"
   }
 }

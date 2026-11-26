@@ -1,0 +1,100 @@
+---
+import { getAdminUser } from '../../lib/auth';
+
+export const prerender = false;
+
+// The editor itself is a static client (public/admin/app.js); this page only gates it.
+const user = await getAdminUser(Astro.request.headers);
+if (!user || !user.twoFactorEnabled) return Astro.redirect('/admin/login', 302);
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="darkreader-lock" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>DTF Transferprint · Admin</title>
+    <link rel="icon" href="/admin/favicon.svg" />
+    <link rel="stylesheet" href="/admin/app.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#/">
+        <img class="brand-icon" src="/favicon.svg" width="24" height="24" alt="" />
+        <span><strong>DTF Transferprint</strong> Admin</span>
+      </a>
+      <a class="brand-selini" href="https://selini-shirt.de/" target="_blank" rel="noopener" title="Selini-Shirt"><picture><source srcset="/brand/selini-shirt-logo-white-60.webp 1x, /brand/selini-shirt-logo-white-120.webp 2x" media="(prefers-color-scheme: dark)" /><img src="/brand/selini-shirt-logo-black-60.webp" srcset="/brand/selini-shirt-logo-black-60.webp 1x, /brand/selini-shirt-logo-black-120.webp 2x" width="49" height="24" alt="Selini-Shirt" /></picture></a>
+      <nav class="tabs" id="tabs" aria-label="Bereiche"></nav>
+      <div class="top-right">
+        <span class="user-chip" id="user-chip"></span>
+        <button type="button" class="btn btn-small btn-ghost" id="btn-password">Passwort</button>
+        <button type="button" class="btn btn-small" id="btn-logout">Abmelden</button>
+      </div>
+    </header>
+
+    <div id="app" class="app"></div>
+
+    <div class="savebar" id="savebar" hidden>
+      <div class="savebar-inner">
+        <span class="savebar-dot" aria-hidden="true"></span>
+        <span id="savebar-text">Änderungen nicht gespeichert</span>
+        <span class="savebar-spacer"></span>
+        <button type="button" class="btn btn-ghost" id="discard">Verwerfen</button>
+        <button type="button" class="btn btn-primary" id="save">Entwurf speichern <kbd>Strg S</kbd></button>
+      </div>
+    </div>
+
+    <dialog id="picker" class="modal">
+      <form method="dialog" class="modal-head">
+        <h2>Bild wählen</h2>
+        <input type="search" id="picker-filter" placeholder="Dateiname filtern …" aria-label="Bilder filtern" />
+        <label class="btn btn-primary upload-btn">
+          Hochladen
+          <input type="file" id="picker-upload" accept="image/jpeg,image/png,image/webp,image/avif" hidden />
+        </label>
+        <button class="btn btn-ghost" value="cancel" aria-label="Schließen">✕</button>
+      </form>
+      <p class="modal-note" id="picker-note"></p>
+      <div class="picker-drop" id="picker-drop">
+        <div class="picker-grid" id="picker-grid"></div>
+      </div>
+    </dialog>
+
+    <dialog id="publish" class="modal">
+      <form method="dialog" class="modal-head">
+        <h2 id="publish-title">Veröffentlichen</h2>
+        <span class="savebar-spacer"></span>
+        <button class="btn btn-ghost" value="cancel" aria-label="Schließen">✕</button>
+      </form>
+      <form id="publish-form" class="card-body">
+        <p class="card-help" id="publish-help"></p>
+        <div class="field">
+          <label class="field-label" for="publish-note">Notiz zur Version (optional)</label>
+          <input class="input" id="publish-note" maxlength="300" placeholder="z. B. Preise November angepasst" />
+        </div>
+        <div class="list-foot">
+          <button type="submit" class="btn btn-publish">Jetzt veröffentlichen</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="password" class="modal">
+      <form method="dialog" class="modal-head">
+        <h2>Passwort ändern</h2>
+        <span class="savebar-spacer"></span>
+        <button class="btn btn-ghost" value="cancel" aria-label="Schließen">✕</button>
+      </form>
+      <form id="password-form" class="card-body">
+        <div class="field"><label class="field-label" for="pw-current">Aktuelles Passwort</label><input class="input" id="pw-current" type="password" autocomplete="current-password" required /></div>
+        <div class="field"><label class="field-label" for="pw-next">Neues Passwort (mind. 12 Zeichen)</label><input class="input" id="pw-next" type="password" autocomplete="new-password" minlength="12" required /></div>
+        <div class="list-foot"><button type="submit" class="btn btn-primary">Passwort ändern</button></div>
+      </form>
+    </dialog>
+
+    <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+    <script type="module" src="/admin/app.js"></script>
+  </body>
+</html>

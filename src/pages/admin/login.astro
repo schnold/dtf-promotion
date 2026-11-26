@@ -1,0 +1,96 @@
+---
+import { getAdminUser } from '../../lib/auth';
+import { getPool } from '../../lib/db';
+
+export const prerender = false;
+
+const user = await getAdminUser(Astro.request.headers);
+if (user?.twoFactorEnabled) return Astro.redirect('/admin', 302);
+const databaseMissing = !getPool();
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="darkreader-lock" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Anmelden · DTF Transferprint Admin</title>
+    <link rel="icon" href="/admin/favicon.svg" />
+    <link rel="stylesheet" href="/admin/app.css" />
+  </head>
+  <body>
+    <main class="login-wrap">
+      <div class="login-card">
+        <div class="login-brand"><span class="brand"><img class="brand-icon" src="/favicon.svg" width="24" height="24" alt="" /><span><strong>DTF Transferprint</strong> Admin</span></span><a class="brand-selini" href="https://selini-shirt.de/" target="_blank" rel="noopener" title="Selini-Shirt"><picture><source srcset="/brand/selini-shirt-logo-white-60.webp 1x, /brand/selini-shirt-logo-white-120.webp 2x" media="(prefers-color-scheme: dark)" /><img src="/brand/selini-shirt-logo-black-60.webp" srcset="/brand/selini-shirt-logo-black-60.webp 1x, /brand/selini-shirt-logo-black-120.webp 2x" width="49" height="24" alt="Selini-Shirt" /></picture></a></div>
+
+        {databaseMissing && (
+          <div class="login-error" role="alert">Die Datenbank ist nicht verbunden. In Netlify unter „Database“ eine Datenbank anlegen und neu deployen.</div>
+        )}
+
+        <section id="step-setup" hidden>
+          <h1>Admin-Konto anlegen</h1>
+          <p>Einmalig. Den Einrichtungs-Code haben Sie in Netlify als <code>ADMIN_SETUP_TOKEN</code> hinterlegt.</p>
+          <form id="form-setup" novalidate>
+            <label>Einrichtungs-Code <input class="input" type="password" name="token" autocomplete="off" required /></label>
+            <label>Name <input class="input" name="name" autocomplete="name" required /></label>
+            <label>E-Mail <input class="input" type="email" name="email" autocomplete="username" required /></label>
+            <label>Passwort (mind. 12 Zeichen) <input class="input" type="password" name="password" autocomplete="new-password" minlength="12" required /></label>
+            <label>Passwort wiederholen <input class="input" type="password" name="password2" autocomplete="new-password" minlength="12" required /></label>
+            <div class="login-error" role="alert" hidden></div>
+            <button class="btn btn-primary" type="submit">Konto anlegen</button>
+          </form>
+        </section>
+
+        <section id="step-setup-locked" hidden>
+          <h1>Noch kein Admin-Konto</h1>
+          <p>Legen Sie in Netlify unter <b>Project configuration → Environment variables</b> die Variable <code>ADMIN_SETUP_TOKEN</code> an (mind. 16 zufällige Zeichen), deployen Sie neu und laden Sie diese Seite dann neu.</p>
+        </section>
+
+        <section id="step-password" hidden>
+          <h1>Anmelden</h1>
+          <p>Mit E-Mail und Passwort, danach mit dem Code aus Ihrer Authenticator-App.</p>
+          <form id="form-password" novalidate>
+            <label>E-Mail <input class="input" type="email" name="email" autocomplete="username" required /></label>
+            <label>Passwort <input class="input" type="password" name="password" autocomplete="current-password" required /></label>
+            <div class="login-error" role="alert" hidden></div>
+            <button class="btn btn-primary" type="submit">Weiter</button>
+          </form>
+        </section>
+
+        <section id="step-totp" hidden>
+          <h1>Bestätigungscode</h1>
+          <p id="totp-help">Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.</p>
+          <form id="form-totp" novalidate>
+            <label><span id="totp-label">Code</span> <input class="input code-input" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="12" required /></label>
+            <div class="login-error" role="alert" hidden></div>
+            <button class="btn btn-primary" type="submit">Anmelden</button>
+          </form>
+          <p><button type="button" class="btn btn-small btn-ghost" id="toggle-backup">Stattdessen einen Backup-Code verwenden</button></p>
+        </section>
+
+        <section id="step-enroll" hidden>
+          <h1>Zwei-Faktor einrichten</h1>
+          <p>Einmalig: Scannen Sie den QR-Code mit einer Authenticator-App (z. B. Google Authenticator, Microsoft Authenticator, 1Password) und geben Sie den angezeigten Code ein.</p>
+          <form id="form-enroll-password" novalidate hidden>
+            <label>Passwort bestätigen <input class="input" type="password" name="password" autocomplete="current-password" required /></label>
+            <div class="login-error" role="alert" hidden></div>
+            <button class="btn btn-primary" type="submit">QR-Code anzeigen</button>
+          </form>
+          <div id="enroll-qr" hidden>
+            <div class="qr"><img id="qr" alt="QR-Code für die Authenticator-App" width="200" height="200" /><span class="secret" id="secret"></span></div>
+            <p><b>Backup-Codes</b> – sicher aufbewahren. Jeder Code ersetzt einmal den App-Code, falls das Handy fehlt:</p>
+            <pre class="backup-codes" id="backup-codes"></pre>
+            <form id="form-enroll" class="enroll-form" novalidate>
+              <label>Code aus der App <input class="input code-input" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" required /></label>
+              <div class="login-error" role="alert" hidden></div>
+              <button class="btn btn-primary" type="submit">Einrichten & anmelden</button>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="/admin/login.js"></script>
+  </body>
+</html>

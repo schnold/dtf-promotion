@@ -1,10 +1,16 @@
-import { getStore } from '@netlify/blobs';
+import { type Cms, REFERENCE } from './cms';
 
 export interface PriceFormat {
   key: string;
   widthCm: number;
   heightCm: number;
   unitPrice: number;
+}
+
+/** One row of the shop's Staffelpreis list: from `quantity` metres the price per metre drops to `pricePerMeter`. */
+export interface PriceTier {
+  quantity: number;
+  pricePerMeter: number;
 }
 
 export interface SiteSettings {
@@ -17,28 +23,11 @@ export interface SiteSettings {
   recommendedDpi: number;
   locationLabel: string;
   formats: PriceFormat[];
+  tiers: PriceTier[];
 }
 
-export const DEFAULT_SETTINGS: SiteSettings = {
-  basePricePerMeter: 13.95,
-  rollWidthCm: 56,
-  maxQuantity: 100,
-  priceUpdatedLabel: 'Oktober 2026',
-  experienceYears: 30,
-  deliveryLabel: '3–5 Tage',
-  recommendedDpi: 300,
-  locationLabel: 'Berlin',
-  formats: [
-    { key: 'A6', widthCm: 10.5, heightCm: 14.8, unitPrice: 0.39 },
-    { key: 'A5', widthCm: 14.8, heightCm: 21, unitPrice: 0.77 },
-    { key: 'A4', widthCm: 21, heightCm: 29.7, unitPrice: 1.55 },
-    { key: 'A3', widthCm: 29.7, heightCm: 42, unitPrice: 3.11 },
-    { key: 'A2', widthCm: 42, heightCm: 59.4, unitPrice: 6.22 },
-    { key: '1 M', widthCm: 56, heightCm: 100, unitPrice: 13.95 },
-  ],
-};
-
-const SETTINGS_KEY = 'site-settings-v1';
+export const MAX_FORMATS = 20;
+export const MAX_TIERS = 20;
 
 export class SettingsValidationError extends Error {
   constructor(message: string) {
@@ -47,13 +36,37 @@ export class SettingsValidationError extends Error {
   }
 }
 
-function getSettingsStore() {
-  const deployContext = (process.env.CONTEXT || 'local').toLowerCase().replace(/[^a-z0-9-]/g, '-');
-  return getStore({ name: `dtf-transferprint-${deployContext}`, consistency: 'strong' });
-}
-
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
+}
+
+function validateTiers(value: unknown): PriceTier[] {
+  if (!Array.isArray(value) || value.length < 1 || value.length > MAX_TIERS) {
+    throw new SettingsValidationError(`Es müssen zwischen 1 und ${MAX_TIERS} Staffelpreise vorhanden sein.`);
+  }
+
+  const tiers = value.map((tier, index) => {
+    if (!tier || typeof tier !== 'object') throw new SettingsValidationError(`Staffel ${index + 1} ist ungültig.`);
+    const candidate = tier as Partial<PriceTier>;
+    if (!isFiniteNumber(candidate.quantity) || candidate.quantity < 1 || candidate.quantity > 1_000_000 || !Number.isInteger(candidate.quantity)) {
+      throw new SettingsValidationError(`Menge für Staffel ${index + 1} ist ungültig (ganze Zahl ab 1).`);
+    }
+    if (!isFiniteNumber(candidate.pricePerMeter) || candidate.pricePerMeter <= 0 || candidate.pricePerMeter > 1_000_000) {
+      throw new SettingsValidationError(`Meterpreis für Staffel ab ${candidate.quantity} ist ungültig.`);
+    }
+    return { quantity: candidate.quantity, pricePerMeter: candidate.pricePerMeter };
+  });
+
+  for (let index = 1; index < tiers.length; index += 1) {
+    if (tiers[index].quantity <= tiers[index - 1].quantity) {
+      throw new SettingsValidationError('Staffelmengen müssen aufsteigend und eindeutig sein.');
+    }
+    if (tiers[index].pricePerMeter > tiers[index - 1].pricePerMeter) {
+      throw new SettingsValidationError(`Der Meterpreis ab ${tiers[index].quantity} darf nicht über dem der vorherigen Staffel liegen.`);
+    }
+  }
+
+  return tiers;
 }
 
 export function validateSettings(value: unknown): SiteSettings {
@@ -83,8 +96,8 @@ export function validateSettings(value: unknown): SiteSettings {
     }
   }
 
-  if (!Array.isArray(input.formats) || input.formats.length < 1 || input.formats.length > 20) {
-    throw new SettingsValidationError('Es müssen zwischen 1 und 20 Formate vorhanden sein.');
+  if (!Array.isArray(input.formats) || input.formats.length < 1 || input.formats.length > MAX_FORMATS) {
+    throw new SettingsValidationError(`Es müssen zwischen 1 und ${MAX_FORMATS} Formate vorhanden sein.`);
   }
 
   const formats = input.formats.map((format, index) => {
@@ -106,6 +119,8 @@ export function validateSettings(value: unknown): SiteSettings {
     };
   });
 
+  const tiers = validateTiers(input.tiers);
+
   return {
     basePricePerMeter: input.basePricePerMeter as number,
     rollWidthCm: input.rollWidthCm as number,
@@ -116,71 +131,21 @@ export function validateSettings(value: unknown): SiteSettings {
     recommendedDpi: Math.round(input.recommendedDpi as number),
     locationLabel: (input.locationLabel as string).trim(),
     formats,
+    tiers,
   };
 }
 
-export async function getSiteSettings(): Promise<SiteSettings> {
-  try {
-    const store = getSettingsStore();
-    const stored = await store.get(SETTINGS_KEY, { type: 'json', consistency: 'strong' });
-    if (stored === null) {
-      await store.setJSON(SETTINGS_KEY, DEFAULT_SETTINGS, { onlyIfNew: true });
-      return DEFAULT_SETTINGS;
-    }
-    return validateSettings(stored);
-  } catch (error) {
-    console.error('Settings could not be read; using safe defaults.', error);
-    return DEFAULT_SETTINGS;
-  }
+/**
+ * Prices and numbers of a cms.json document (`shared.pricing`), edited in the admin (/admin).
+ * They mirror the shop product "DTF Transfer Meterware 560 × 1000 mm"
+ * (https://selini-shirt.de/product/dtf-transfer-meterware-bestellen, Stand November 2026).
+ * Format prices = area × (8.24 € / 0.56 m²), rounded to 2 decimals.
+ * validateSettings() both checks the values and drops the `_label`/`_help`/`_hints` metadata keys.
+ * The admin runs the same check before saving or publishing, so invalid prices never go live.
+ */
+export function settingsFrom(cms: Cms): SiteSettings {
+  return validateSettings(cms.shared.pricing);
 }
 
-export async function isSettingsStoreHealthy(): Promise<boolean> {
-  try {
-    const store = getSettingsStore();
-    const stored = await store.get(SETTINGS_KEY, { type: 'json', consistency: 'strong' });
-    if (stored === null) await store.setJSON(SETTINGS_KEY, DEFAULT_SETTINGS, { onlyIfNew: true });
-    return true;
-  } catch (error) {
-    console.error('Settings store health check failed.', error);
-    return false;
-  }
-}
-
-export async function saveSiteSettings(settings: SiteSettings): Promise<void> {
-  const validated = validateSettings(settings);
-  await getSettingsStore().setJSON(SETTINGS_KEY, validated, {
-    metadata: { updatedAt: new Date().toISOString() },
-  });
-}
-
-export function settingsFromForm(form: FormData): SiteSettings {
-  const text = (name: string) => String(form.get(name) ?? '').trim();
-  const number = (name: string) => Number(text(name).replace(',', '.'));
-  const formatCount = Math.round(number('formatCount'));
-  const formats: PriceFormat[] = [];
-
-  if (!Number.isFinite(formatCount) || formatCount < 1 || formatCount > 20) {
-    throw new SettingsValidationError('Ungültige Anzahl an Formaten.');
-  }
-
-  for (let index = 0; index < formatCount; index += 1) {
-    formats.push({
-      key: text(`format_key_${index}`),
-      widthCm: number(`format_width_${index}`),
-      heightCm: number(`format_height_${index}`),
-      unitPrice: number(`format_price_${index}`),
-    });
-  }
-
-  return validateSettings({
-    basePricePerMeter: number('basePricePerMeter'),
-    rollWidthCm: number('rollWidthCm'),
-    maxQuantity: number('maxQuantity'),
-    priceUpdatedLabel: text('priceUpdatedLabel'),
-    experienceYears: number('experienceYears'),
-    deliveryLabel: text('deliveryLabel'),
-    recommendedDpi: number('recommendedDpi'),
-    locationLabel: text('locationLabel'),
-    formats,
-  });
-}
+/** Prices of the bundled cms.json; checked at build time so a broken file fails the deploy. */
+export const DEFAULT_SETTINGS: SiteSettings = settingsFrom(REFERENCE);

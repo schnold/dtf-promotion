@@ -1,0 +1,18 @@
+---
+import HomePage from '../../components/HomePage.astro';
+import { contentState } from '../../lib/admin-store';
+import { getAdminUser } from '../../lib/auth';
+import { toCms } from '../../lib/content';
+import { buildSiteView } from '../../lib/site';
+
+export const prerender = false;
+
+// The saved draft rendered exactly like the live page (noindex, never cached).
+const user = await getAdminUser(Astro.request.headers);
+if (!user || !user.twoFactorEnabled) return Astro.redirect('/admin/login', 302);
+
+const { draft } = await contentState();
+const view = buildSiteView(toCms(draft));
+---
+
+<HomePage view={view} preview />

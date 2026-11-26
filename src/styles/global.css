@@ -1,4 +1,45 @@
+/*
+  DTF TRANSFERPRINT · design hallmark
+  ------------------------------------------------------------------
+  shape     One long poster, read top to bottom. Full-bleed colour
+            blocks (ink → paper → blue → paper → ink → cyan → paper →
+            yellow → ink → pink) separated by hairline or 2 px rules,
+            never by shadows or rounded cards. Content sits in a
+            1440 px shell with 16 px gutters (container-shell).
+  theme     Dark neon print shop: ink background, screen-print
+            registration colours, hard edges, zero border radius.
+            The fixed rainbow line at the top and the gradient scroll
+            rail are the "ink bars" of a print-shop test strip.
+  signature Oversized Syne headlines with one outlined word
+            (.ink-outline) and 2 px ink borders with an offset solid
+            shadow (pink or ink) that reads like a misregistered print.
+            Tables and step grids reuse the same border grid so new
+            sections (Staffelpreise, Pressen, Datei, Vergleich, FAQ)
+            feel like more panels of the same poster.
+  type      Syne Variable 800 for display (tight tracking -.05/-.075em,
+            line-height ≤ .94); Archivo Variable for body, ss02 on.
+            Big numbers use tabular lining figures and shrink via
+            data-length so an estimate never overflows its yellow box.
+  palette   ink #090a0c · paper #f4f4ef · cyan #00d7ff · pink #ff2b91
+            · yellow #ffe500 · blue #3857ff. One accent per section;
+            yellow is the "buy" colour everywhere (nav, CTA, DTF column).
+  cut       No gradient hero typography, no glassmorphism, no icon
+            badges with soft shadows, no third-party fonts or scripts.
+            The former "Vier Schritte" marketing grid became the
+            concrete press-parameter list, and "Warum DTF" became the
+            method comparison table, because searchers want numbers
+            and decisions, not adjectives. Light mode is intentionally
+            not offered: the poster is the brand; contrast is handled
+            per block (dark text on paper/cyan/yellow, light on ink/blue/pink).
+*/
 @import "tailwindcss";
+/*
+  cms.json holds editable copy, not class names: keep Tailwind from generating CSS for its words.
+  The blocklist covers cms.json keys that index.astro reads (page.hero, footer, steps, rating) and
+  that would otherwise match daisyUI component names.
+*/
+@source not "../data/cms.json";
+@source not inline("hero footer steps rating visible");
 @plugin "daisyui" {
   themes: false;
 }
@@ -181,6 +222,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
   letter-spacing: -.08em;
 }
 
+/* Fact strip: fluid size so "24–48 h Produktion" fits a 2-column phone grid without clipping. */
+.fact-value {
+  font-size: clamp(1.3rem, 2.5vw, 2.4rem);
+  line-height: .95;
+  text-wrap: balance;
+}
+
+/* Data tables share the poster's border grid; numbers stay tabular so columns line up. */
+.price-table td, .price-table th, .compare-table td, .compare-table th {
+  vertical-align: top;
+}
+.price-table tbody tr:hover { background: rgb(255 255 255 / .05); }
+.compare-table th[scope="row"] { white-space: nowrap; }
+
 details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 details[open] .faq-plus { transform: rotate(45deg); }
@@ -191,3 +246,17 @@ details[open] .faq-plus { transform: rotate(45deg); }
   .reveal { opacity: 1; transform: none; }
   .ticker-track { transform: none !important; }
 }
+
+/* Admin draft preview (/admin/preview) */
+.preview-banner {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 120;
+  padding: .7rem 1rem;
+  background: var(--color-yellow);
+  color: var(--color-ink);
+  font-weight: 700;
+  font-size: .9rem;
+  text-align: center;
+}
+.preview-banner a { text-decoration: underline; }

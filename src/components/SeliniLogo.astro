@@ -1,0 +1,23 @@
+---
+/**
+ * Selini-Shirt logo (logo-1 of the shop, recoloured; files in public/brand/), linked to the shop.
+ * `height` is the displayed height in px; the 2x file keeps it sharp on retina screens.
+ */
+interface Props {
+  href: string;
+  height?: number;
+  class?: string;
+  /** Visible "by" text before the logo (header). */
+  prefix?: string;
+  color?: 'white' | 'black';
+}
+
+const { href, height = 30, class: className = '', prefix, color = 'white' } = Astro.props;
+const width = Math.round((571 / 280) * height);
+const base = `/brand/selini-shirt-logo-${color}`;
+---
+
+<a href={href} rel="noopener" class:list={['selini-logo inline-flex items-center gap-2', className]} aria-label="Selini-Shirt – zum Shop">
+  {prefix && <span class="text-[10px] font-bold uppercase tracking-[.14em] text-white/50" aria-hidden="true">{prefix}</span>}
+  <img src={`${base}-60.webp`} srcset={`${base}-60.webp 1x, ${base}-120.webp 2x`} width={width} height={height} alt="Selini-Shirt" decoding="async" />
+</a>
